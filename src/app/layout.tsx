@@ -52,7 +52,7 @@ export default function RootLayout({
           {/* <CiDark size={48} /> */}
         </header>
 
-        <section>{children}</section>
+        <section className='max-w-screen-md mx-auto'>{children}</section>
       </body>
     </html>
   );

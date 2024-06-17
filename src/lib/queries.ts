@@ -17,14 +17,18 @@ export async function getAllPosts(): Promise<Post[] | null> {
 }
 
 export async function getPost(
-  slug: string
-): Promise<{ blocks: BlockMapType } | null> {
+  id: string
+): Promise<{ blocks: BlockMapType; post: Post | undefined } | null> {
   try {
+    const posts = await getAllPosts();
+
+    const post = posts?.find((post) => post.id === id);
+
     const blocks: BlockMapType = await fetch(
-      `https://notion-api.splitbee.io/v1/page/${slug}`
+      `https://notion-api.splitbee.io/v1/page/${id}`
     ).then((res) => res.json());
 
-    return { blocks };
+    return { blocks, post };
   } catch (err) {
     // error
     return null;
