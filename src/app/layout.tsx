@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
 // import { CiDark } from 'react-icons/ci';
+import 'react-notion/src/styles.css';
+import 'prismjs/themes/prism-tomorrow.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
