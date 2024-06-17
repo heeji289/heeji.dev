@@ -3,4 +3,5 @@ export type Post = {
   tags: string[];
   slug: string;
   title: string;
+  date: string;
 };

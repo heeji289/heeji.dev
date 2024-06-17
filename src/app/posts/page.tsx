@@ -14,7 +14,10 @@ export default async function PostsPage() {
     <div>
       {posts.map((post: Post) => (
         <Link href={`/posts/${post.id}`} key={post.id}>
-          <span>{post.title}</span>
+          <div className='flex items-baseline gap-2'>
+            <span className='text-lg font-semi-bold'>{post.title}</span>
+            <span className='text-xs'>{post.date}</span>
+          </div>
         </Link>
       ))}
     </div>
