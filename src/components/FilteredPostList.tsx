@@ -4,6 +4,8 @@ import { Post } from '@/lib/types';
 import { convertToUniqArray } from '@/lib/utils';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import PostCard from './PostCard';
+import Chip from './ui/Chip';
 
 export default function FilteredPostList({ posts }: { posts: Post[] }) {
   const [selectedTag, setSelectedTag] = useState('');
@@ -23,26 +25,22 @@ export default function FilteredPostList({ posts }: { posts: Post[] }) {
 
   return (
     <div>
-      <div className='flex flex-wrap gap-2 py-2'>
+      <div className='flex flex-wrap gap-1 py-2'>
         {tags?.map((tag) => (
-          <button
-            onClick={() => handleSelectTag(tag)}
+          <Chip
             key={tag}
-            className='relative grid select-none items-center whitespace-nowrap rounded-lg bg-gray-900/10 py-1.5 px-3 font-sans text-xs font-bold uppercase text-gray-900'
-          >
-            <span className=''>{tag}</span>
-          </button>
+            onClickCallback={() => handleSelectTag(tag)}
+            text={tag}
+            theme={tag === selectedTag ? 'info' : 'default'}
+          />
         ))}
       </div>
 
-      {filteredPosts.map((post: Post) => (
-        <Link href={`/posts/${post.id}`} key={post.id}>
-          <div className='flex items-baseline gap-2'>
-            <span className='text-lg font-semi-bold'>{post.title}</span>
-            <span className='text-xs'>{post.date}</span>
-          </div>
-        </Link>
-      ))}
+      <section className='flex flex-col gap-2'>
+        {filteredPosts.map((post: Post) => (
+          <PostCard key={post.id} post={post} />
+        ))}
+      </section>
     </div>
   );
 }

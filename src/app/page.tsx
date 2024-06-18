@@ -29,24 +29,14 @@ export default async function Home() {
       <div className='flex flex-col gap-2'>
         <span>Pinned blog posts:</span>
         {pinnedPosts.map((post) => (
-          <PostCard
-            key={post.id}
-            title={post.title}
-            tags={post.tags}
-            date={post.date}
-          />
+          <PostCard key={post.id} post={post} />
         ))}
       </div>
 
       <div className='flex flex-col gap-2'>
         <span>Last blog posts:</span>
         {posts.slice(0, 5).map((post) => (
-          <PostCard
-            key={post.id}
-            title={post.title}
-            tags={post.tags}
-            date={post.date}
-          />
+          <PostCard key={post.id} post={post} />
         ))}
       </div>
     </main>
