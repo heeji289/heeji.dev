@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
-// import { CiDark } from 'react-icons/ci';
+import { CiDark } from 'react-icons/ci';
 import 'react-notion/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
+import Image from 'next/image';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
 const navigationData = [
   {
     path: '/posts',
-    pathName: 'POST',
+    pathName: 'Post',
   },
   {
     path: '/about',
-    pathName: 'ABOUT',
+    pathName: 'About',
   },
 ];
 
@@ -31,28 +32,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko'>
-      <body className={`${inter.className} `}>
-        <header className='container mx-auto py-6 flex items-center'>
-          <Link href={'/'} className='text-4xl font-semi-bold'>
-            HEEJI
-          </Link>
+      <body className={`${inter.className} px-6`}>
+        <header className='container max-w-screen-sm mx-auto pb-6 pt-12 flex justify-between'>
+          <nav className='flex gap-2'>
+            <Link href={'/'} className='flex gap-1 items-center'>
+              <Image
+                src={'/icons/smile.png'}
+                alt='logo image'
+                width={22}
+                height={22}
+              />
+              <span>Home</span>
+            </Link>
 
-          <nav className='flex grow w-full'>
-            <ul className='flex flex-row gap-4 w-full justify-end'>
+            <ul className='flex gap-2'>
               {navigationData.map((data) => (
                 <li key={data.path}>
-                  <Link href={data.path} className='text-lg'>
-                    {data.pathName}
-                  </Link>
+                  <Link href={data.path}>{data.pathName}</Link>
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* <CiDark size={48} /> */}
+          <CiDark size={24} />
         </header>
 
-        <section className='max-w-screen-md mx-auto'>{children}</section>
+        <section className='max-w-screen-sm mx-auto'>{children}</section>
       </body>
     </html>
   );
