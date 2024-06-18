@@ -4,4 +4,5 @@ export type Post = {
   slug: string;
   title: string;
   date: string;
+  pinned?: string; // true, false
 };
