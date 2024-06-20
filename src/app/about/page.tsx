@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
 import { FaGithubSquare, FaLinkedin } from 'react-icons/fa';
@@ -56,6 +57,10 @@ const experienceData: Experience[] = [
 
 const GITHUB_LINK = 'https://github.com/heeji289';
 const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';
+
+export const metadata: Metadata = {
+  title: 'About | heeji.dev',
+};
 
 export default function AboutPage() {
   return (
