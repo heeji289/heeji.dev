@@ -1,10 +1,38 @@
 import { getPost } from '@/lib/queries';
+import { Metadata } from 'next';
 import React from 'react';
 import { NotionRenderer } from 'react-notion';
 
 type Param = {
   slug: string;
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Param;
+}): Promise<Metadata> {
+  const result = await getPost(params.slug);
+
+  return {
+    title: result?.post?.title ?? '',
+    authors: [{ name: ' 임희지', url: 'https://heeji.dev' }],
+    keywords: result?.post?.tags ?? [],
+    openGraph: {
+      title: result?.post?.title ?? '',
+      siteName: 'heeji.dev',
+      locale: 'ko_KR',
+      type: 'article',
+      authors: '임희지',
+      tags: result?.post?.tags ?? [],
+    },
+    twitter: {
+      card: 'summary',
+      title: result?.post?.title ?? '',
+      creator: '@huge_0314',
+    },
+  };
+}
 
 export default async function PostDetailPage({ params }: { params: Param }) {
   const result = await getPost(params.slug);
