@@ -28,7 +28,7 @@ export default function Chip({ text, theme, onClickCallback }: Chip) {
   return (
     <button
       onClick={onClickCallback}
-      className={`relative  grid select-none items-center whitespace-nowrap rounded-sm bg-${colors[theme].backgroundColor} py-1 px-2 text-xs font-semi-bold uppercase text-gray-900 border-2 border-${colors[theme].borderColor}`}
+      className={`relative  grid select-none items-center whitespace-nowrap rounded-sm bg-${colors[theme].backgroundColor} py-1 px-2 text-xs font-semi-bold uppercase text-gray-900 dark:text-white border-2 border-${colors[theme].borderColor}`}
     >
       {text}
     </button>

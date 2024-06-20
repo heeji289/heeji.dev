@@ -6,3 +6,8 @@ export type Post = {
   date: string;
   pinned?: string; // true, false
 };
+
+export enum Theme {
+  dark = 'dark',
+  light = 'light',
+}

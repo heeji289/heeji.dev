@@ -77,7 +77,10 @@ export default function AboutPage() {
 
       <div className='w-full flex flex-col gap-6'>
         {experienceData.map((data) => (
-          <div key={data.period} className='flex divide-x-2 divide-stone-900'>
+          <div
+            key={data.period}
+            className='flex divide-x-2 divide-stone-900 dark:divide-zinc-100'
+          >
             <p className='w-32'>{data.period}</p>
 
             <div className='pl-4'>
