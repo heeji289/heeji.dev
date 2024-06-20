@@ -3,7 +3,19 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  body,
+  li,
+  p {
     @apply bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span {
+    @apply text-zinc-900 dark:text-white;
   }
 }
