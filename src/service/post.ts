@@ -1,13 +1,19 @@
+import { Post } from '@/lib/types';
 import { BlockMapType } from 'react-notion';
-import { Post } from './types';
 
-const NOTION_API_URL = 'https://notion-api.splitbee.io/v1/table/';
+const NOTION_API_URL = 'https://notion-api.splitbee.io/v1/';
+const REVALIDATE_TIME = 60 * 60 * 3;
+
+async function fetcher(endpoint: string) {
+  return await fetch(
+    `${NOTION_API_URL}${endpoint}/${process.env.NOTION_BLOG_ID}`,
+    { next: { revalidate: REVALIDATE_TIME } }
+  ).then((res) => res.json());
+}
 
 export async function getAllPosts(): Promise<Post[] | null> {
   try {
-    const result = await fetch(
-      `${NOTION_API_URL}${process.env.NOTION_BLOG_ID}`
-    ).then((res) => res.json());
+    const result = await fetcher('table');
 
     return result;
   } catch (err) {
@@ -24,9 +30,7 @@ export async function getPost(
 
     const post = posts?.find((post) => post.id === id);
 
-    const blocks: BlockMapType = await fetch(
-      `https://notion-api.splitbee.io/v1/page/${id}`
-    ).then((res) => res.json());
+    const blocks: BlockMapType = await fetcher('page');
 
     return { blocks, post };
   } catch (err) {

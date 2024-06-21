@@ -1,5 +1,5 @@
 import FilteredPostList from '@/components/FilteredPostList';
-import { getAllPosts } from '@/lib/queries';
+import { getAllPosts } from '@/service/post';
 import { Metadata } from 'next';
 import React, { useState } from 'react';
 
