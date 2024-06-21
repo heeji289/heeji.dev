@@ -1,5 +1,5 @@
 import PostCard from '@/components/PostCard';
-import { getAllPosts } from '@/lib/queries';
+import { getAllPosts } from '@/service/post';
 import Image from 'next/image';
 
 export default async function Home() {

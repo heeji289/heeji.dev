@@ -1,4 +1,4 @@
-import { getAllPosts, getPost } from '@/lib/queries';
+import { getAllPosts, getPost } from '@/service/post';
 import { Metadata } from 'next';
 import React from 'react';
 import { NotionRenderer } from 'react-notion';
