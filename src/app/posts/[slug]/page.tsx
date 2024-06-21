@@ -1,4 +1,4 @@
-import { getPost } from '@/lib/queries';
+import { getAllPosts, getPost } from '@/lib/queries';
 import { Metadata } from 'next';
 import React from 'react';
 import { NotionRenderer } from 'react-notion';
@@ -32,6 +32,15 @@ export async function generateMetadata({
       creator: '@huge_0314',
     },
   };
+}
+
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return (
+    posts?.map((post) => ({
+      slug: post.id,
+    })) ?? []
+  );
 }
 
 export default async function PostDetailPage({ params }: { params: Param }) {
