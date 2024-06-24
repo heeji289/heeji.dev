@@ -8,6 +8,7 @@ import Image from 'next/image';
 import ThemeToggle from '@/components/ThemeToggle';
 import { cookies } from 'next/headers';
 import { Theme } from '@/lib/types';
+import Search from '@/components/Search';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -38,7 +39,7 @@ export default function RootLayout({
     <html lang='ko' className={theme?.value}>
       <body className={`${inter.className} px-6`}>
         <header className='container max-w-screen-sm mx-auto pb-6 pt-12 flex justify-between'>
-          <nav className='flex gap-2'>
+          <nav className='flex gap-2 items-center'>
             <Link href={'/'} className='flex gap-1 items-center'>
               <Image
                 src={'/icons/smile.png'}
@@ -58,7 +59,10 @@ export default function RootLayout({
             </ul>
           </nav>
 
-          <ThemeToggle themeProps={(theme?.value ?? Theme.light) as Theme} />
+          <div className='flex gap-3 items-center'>
+            <Search />
+            <ThemeToggle themeProps={(theme?.value ?? Theme.light) as Theme} />
+          </div>
         </header>
 
         <section className='max-w-screen-sm mx-auto'>{children}</section>
