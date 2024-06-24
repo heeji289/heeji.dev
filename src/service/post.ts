@@ -8,7 +8,7 @@ const REVALIDATE_TIME = 60 * 60 * 3; // 3시간
 export async function getAllPosts(): Promise<Post[] | null> {
   try {
     const result = await fetch(
-      `${NOTION_API_URL}${process.env.NOTION_BLOG_ID}`,
+      `${NOTION_API_URL}${process.env.NEXT_PUBLIC_NOTION_BLOG_ID}`,
       { next: { revalidate: REVALIDATE_TIME } }
     ).then((res) => res.json());
 

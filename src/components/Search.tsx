@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
 import { Input } from '@/components/ui/input';
+import useSearch from '@/hooks/useSearch';
 
 export default function Search() {
+  const { isLoading, result, searchResult, query } = useSearch();
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -22,16 +23,18 @@ export default function Search() {
           <FaSearch />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>검색</DialogTitle>
         </DialogHeader>
 
-        <Input />
+        <Input value={query} onChange={(e) => searchResult(e.target.value)} />
 
-        {['검색결과1', '검색결과2'].map((text) => (
-          <div key={text}>{text}</div>
-        ))}
+        {isLoading ? (
+          <span>로딩중..</span> // TODO: loading UI
+        ) : (
+          result.map((post) => <div key={post.id}>{post.title}</div>)
+        )}
       </DialogContent>
     </Dialog>
   );
