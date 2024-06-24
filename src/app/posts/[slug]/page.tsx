@@ -53,9 +53,7 @@ export default async function PostDetailPage({ params }: { params: Param }) {
   return (
     <div className='divide-y divide-dashed'>
       <div className='py-4'>
-        <h1 className='text-3xl font-semibold text-gray-900'>
-          {result.post?.title ?? ''}
-        </h1>
+        <h1 className='text-3xl font-semibold'>{result.post?.title ?? ''}</h1>
         <span className='text-gray-600'>{result.post?.date ?? ''}</span>
       </div>
 
