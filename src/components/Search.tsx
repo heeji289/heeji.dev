@@ -3,30 +3,30 @@
 import React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog';
 import { Input } from '@/components/ui/input';
 import useSearch from '@/hooks/useSearch';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 
 export default function Search() {
   const { isLoading, result, searchResult, query } = useSearch();
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant='ghost'>
           <FaSearch />
         </Button>
-      </DialogTrigger>
-      <DialogContent aria-describedby={undefined}>
-        <DialogHeader>
-          <DialogTitle>검색</DialogTitle>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent side={'top'} aria-describedby={undefined}>
+        <SheetHeader>
+          <SheetTitle>검색</SheetTitle>
+        </SheetHeader>
 
         <Input value={query} onChange={(e) => searchResult(e.target.value)} />
 
@@ -35,7 +35,7 @@ export default function Search() {
         ) : (
           result.map((post) => <div key={post.id}>{post.title}</div>)
         )}
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
