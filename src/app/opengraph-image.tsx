@@ -25,14 +25,14 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div
-        tw='w-full h-full flex flex-col items-center justify-center gap-4'
+        tw='w-full h-full flex flex-col items-center justify-center'
         style={{
           backgroundColor: '#fdf8ec',
           fontFamily: '"Pretendard"',
         }}
       >
-        <span tw='text-8xl font-bold block'>heeji.dev</span>
-        <span tw='text-4xl font-bold block'>임희지 개인 블로그</span>
+        <span tw='text-8xl font-bold'>heeji.dev</span>
+        <span tw='text-4xl font-bold'>임희지 개인 블로그</span>
       </div>
     ),
     {
