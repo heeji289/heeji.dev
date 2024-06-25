@@ -3,8 +3,13 @@
 import { Theme } from '@/lib/types';
 import React, { useEffect, useState } from 'react';
 import { FaMoon, FaRegSun } from 'react-icons/fa';
+import { Button } from './ui/button';
 
-export default function ThemeToggle({ themeProps }: { themeProps: Theme }) {
+export default function ThemeToggle({
+  themeProps = Theme.light,
+}: {
+  themeProps?: Theme;
+}) {
   const [theme, setTheme] = useState<Theme>(themeProps);
 
   const handleClickButton = () => {
@@ -23,8 +28,8 @@ export default function ThemeToggle({ themeProps }: { themeProps: Theme }) {
   }, []);
 
   return (
-    <button onClick={handleClickButton}>
+    <Button variant={'ghost'} onClick={handleClickButton}>
       {theme === Theme.light ? <FaMoon /> : <FaRegSun />}
-    </button>
+    </Button>
   );
 }
