@@ -14,24 +14,43 @@ export const contentType = 'image/png';
 
 // Image generation
 export default async function Image() {
+  // const pretendardRegular = fetch(
+  //   new URL('/public/Pretendard-Regular.ttf', import.meta.url)
+  // ).then((res) => res.arrayBuffer());
+
+  // const pretendardBold = fetch(
+  //   new URL('/public/Pretendard-Bold.ttf', import.meta.url)
+  // ).then((res) => res.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
+        tw='w-full h-full flex flex-col items-center justify-center gap-4'
         style={{
-          fontSize: 128,
-          background: 'white',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          backgroundColor: '#fdf8ec',
+          fontFamily: '"Pretendard"',
         }}
       >
-        heeji.dev
+        <span tw='text-8xl font-bold block'>heeji.dev</span>
+        <span tw='text-4xl font-bold block'>임희지 개인 블로그</span>
       </div>
     ),
     {
       ...size,
+      // fonts: [
+      //   {
+      //     name: 'Pretendard',
+      //     data: await pretendardRegular,
+      //     style: 'normal',
+      //     weight: 500,
+      //   },
+      //   {
+      //     name: 'Pretendard',
+      //     data: await pretendardBold,
+      //     style: 'normal',
+      //     weight: 700,
+      //   },
+      // ],
     }
   );
 }
