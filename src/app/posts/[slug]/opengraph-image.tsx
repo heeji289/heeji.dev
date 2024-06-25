@@ -39,54 +39,53 @@ export default async function Image({ params }: Props) {
     );
   }
 
-  const pretendardRegular = fetch(
-    new URL('/public/Pretendard-Regular.ttf', import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  // const pretendardRegular = fetch(
+  //   new URL('/public/Pretendard-Regular.ttf', import.meta.url)
+  // ).then((res) => res.arrayBuffer());
+
+  // const pretendardBold = fetch(
+  //   new URL('/public/Pretendard-Bold.ttf', import.meta.url)
+  // ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
       <div
-        tw='w-full h-full p-4 flex'
+        tw='w-full h-full p-24 flex'
         style={{
-          backgroundImage: 'linear-gradient(to right, #f6f204, #ff9900)',
+          backgroundColor: '#fdf8ec',
           fontFamily: '"Pretendard"',
         }}
       >
-        <div tw='rounded-xl border-2 border-stone-700 w-full h-full p-4 flex bg-stone-800 shadow-lg'>
-          <div tw='flex flex-col px-6 w-[740px] h-full justify-between'>
-            <div tw='flex flex-col'>
-              <span
-                tw={clsx('font-bold text-stone-50 mb-6', {
-                  'text-7xl': (post?.title.length ?? 0) < 40,
-                  'text-6xl': (post?.title.length ?? 0) >= 40,
-                })}
-                style={{
-                  fontFamily: '"Pretendard"',
-                }}
-              >
-                {post?.title ?? ''}
-              </span>
-              <span tw='text-5xl text-stone-300'>{post?.slug ?? ''}</span>
-            </div>
-          </div>
-
-          <div tw='flex items-center'>
-            {/* TODO: profile image */}
-            <p tw='ml-6 text-4xl font-semibold text-stone-400'>heeji.dev</p>
+        <div tw='w-full h-full flex flex-col justify-between'>
+          <span tw='text-7xl font-bold'>{post?.title ?? ''}</span>
+          <div tw='flex items-center justify-between'>
+            <span tw='font-bold text-4xl'>heeji.dev</span>
+            {/* <img
+              tw='rounded-full'
+              width='110'
+              height='110'
+              src='https://github-production-user-asset-6210df.s3.amazonaws.com/41099712/342551671-5aacbbaa-5303-4b72-9597-fa498ed938c9.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20240625%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240625T015515Z&X-Amz-Expires=300&X-Amz-Signature=64b1d1b389b1094c95697df54c61289c58305f5a3e743ffe2101a73c3e58ffb2&X-Amz-SignedHeaders=host&actor_id=41099712&key_id=0&repo_id=809752399'
+            /> */}
           </div>
         </div>
       </div>
     ),
     {
       ...size,
-      fonts: [
-        {
-          name: 'Pretendard',
-          data: await pretendardRegular,
-          style: 'normal',
-          weight: 500,
-        },
-      ],
+      // fonts: [
+      //   {
+      //     name: 'Pretendard',
+      //     data: await pretendardRegular,
+      //     style: 'normal',
+      //     weight: 500,
+      //   },
+      //   {
+      //     name: 'Pretendard',
+      //     data: await pretendardBold,
+      //     style: 'normal',
+      //     weight: 700,
+      //   },
+      // ],
     }
   );
 }
