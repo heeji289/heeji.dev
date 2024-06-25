@@ -1,32 +1,21 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
-import Link from 'next/link';
 import 'react-notion/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
-import Image from 'next/image';
-import ThemeToggle from '@/components/ThemeToggle';
 import { cookies } from 'next/headers';
-import { Theme } from '@/lib/types';
-import Search from '@/components/Search';
 
-const inter = Inter({ subsets: ['latin'] });
+import localFont from 'next/font/local';
+import Header from '@/components/Header';
+
+const myFont = localFont({
+  src: '../../public/Pretendard-Regular.ttf',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'heeji.dev',
   description: '임희지의 개발 블로그. 프론트엔드 개발 관련 기록을 남깁니다.',
 };
-
-const navigationData = [
-  {
-    path: '/posts',
-    pathName: 'Post',
-  },
-  {
-    path: '/about',
-    pathName: 'About',
-  },
-];
 
 export default function RootLayout({
   children,
@@ -37,35 +26,15 @@ export default function RootLayout({
 
   return (
     <html lang='ko' className={theme?.value}>
-      <body className={`${inter.className} px-6`}>
-        <header className='container max-w-screen-sm mx-auto pb-6 pt-12 flex justify-between'>
-          <nav className='flex gap-2 items-center'>
-            <Link href={'/'} className='flex gap-1 items-center'>
-              <Image
-                src={'/icons/smile.png'}
-                alt='logo image'
-                width={22}
-                height={22}
-              />
-              <span>Home</span>
-            </Link>
-
-            <ul className='flex gap-2'>
-              {navigationData.map((data) => (
-                <li key={data.path}>
-                  <Link href={data.path}>{data.pathName}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className='flex gap-3 items-center'>
-            <Search />
-            <ThemeToggle themeProps={(theme?.value ?? Theme.light) as Theme} />
+      <body
+        className={`${myFont.className} bg-background text-black antialiased dark:text-white`}
+      >
+        <section className='mx-auto max-w-3xl px-4 pt-20 sm:px-6 xl:mx-w-[50rem] xl:px-8'>
+          <div className='box-border flex h-full flex-col justify-between'>
+            <Header />
+            <main className='max-w-screen-sm mx-auto pb-6'>{children}</main>
           </div>
-        </header>
-
-        <section className='max-w-screen-sm mx-auto'>{children}</section>
+        </section>
       </body>
     </html>
   );
