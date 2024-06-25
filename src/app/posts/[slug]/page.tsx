@@ -28,7 +28,7 @@ export async function generateMetadata({
       tags: result?.post?.tags ?? [],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: result?.post?.title ?? '',
       creator: '@huge_0314',
     },
