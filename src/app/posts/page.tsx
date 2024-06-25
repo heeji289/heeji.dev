@@ -16,8 +16,8 @@ export default async function PostsPage() {
   }
 
   return (
-    <div>
+    <>
       <FilteredPostList posts={posts} />
-    </div>
+    </>
   );
 }
