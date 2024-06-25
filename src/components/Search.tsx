@@ -6,36 +6,40 @@ import { Button } from './ui/button';
 import { Input } from '@/components/ui/input';
 import useSearch from '@/hooks/useSearch';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from './ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+import PostCard from './PostCard';
 
 export default function Search() {
   const { isLoading, result, searchResult, query } = useSearch();
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button variant='ghost'>
           <FaSearch />
         </Button>
-      </SheetTrigger>
-      <SheetContent side={'top'} aria-describedby={undefined}>
-        <SheetHeader>
-          <SheetTitle>검색</SheetTitle>
-        </SheetHeader>
+      </DialogTrigger>
+      <DialogContent
+        aria-describedby={undefined}
+        className='w-[400px] sm:w-[540px]'
+      >
+        <DialogHeader>
+          <DialogTitle>검색</DialogTitle>
+        </DialogHeader>
 
         <Input value={query} onChange={(e) => searchResult(e.target.value)} />
 
         {isLoading ? (
           <span>로딩중..</span> // TODO: loading UI
         ) : (
-          result.map((post) => <div key={post.id}>{post.title}</div>)
+          result.map((post) => <PostCard key={post.id} post={post} />)
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

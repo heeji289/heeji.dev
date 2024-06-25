@@ -42,7 +42,7 @@ export default function Header() {
     <header className='fixed inset-x-0 top-4 z-40 h-[60px] justify-center flex'>
       <div
         className={cn(
-          'w-full max-w-[500px] items-center justify-between rounded-3xl border border-border bg-secondary px-4 shadow-sm saturate-100 backdrop-blur-[10px] sm:max-w-screen-sm xl:max-w-screen-xl',
+          'w-full max-w-[500px] items-center justify-between rounded-3xl border border-border bg-secondary px-4 shadow-sm saturate-100 backdrop-blur-[10px] sm:max-w-screen-md',
           isScrolled && 'border-transparent bg-background/80'
         )}
       >

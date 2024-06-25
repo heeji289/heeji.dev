@@ -5,6 +5,7 @@ import { convertToUniqArray } from '@/lib/utils';
 import React, { useState } from 'react';
 import PostCard from './PostCard';
 import Chip from './ui/Chip';
+import { Separator } from './ui/separator';
 
 type PostGroupByYear = {
   [key in string]: Post[];
@@ -31,11 +32,13 @@ const sortByYear = (posts: PostGroupByYear) => {
 
 const YearSection = ({ year, posts }: { year: string; posts: Post[] }) => {
   return (
-    <div className='mb-8'>
+    <div>
       <h1 className='text-2xl font-bold mb-2'>{year}</h1>
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
+
+      <Separator className='my-6' />
     </div>
   );
 };

@@ -62,6 +62,28 @@ export const metadata: Metadata = {
   title: 'About | heeji.dev',
 };
 
+function Timeline({ experienceData }: { experienceData: Experience[] }) {
+  return (
+    <div className='container mx-auto p-4'>
+      {experienceData.map((periodData, index) => (
+        <div key={index} className='mb-8'>
+          <h2 className='text-2xl font-bold mb-4'>{periodData.period}</h2>
+          {periodData.items.map((item, idx) => (
+            <div key={idx} className='mb-6'>
+              <h3 className='text-xl font-semibold mb-2'>{item.title}</h3>
+              <ul className='list-disc list-inside'>
+                {item.descriptions.map((desc, descIdx) => (
+                  <li key={descIdx}>{desc}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
     <div className='flex flex-col items-center pt-6 gap-4'>
@@ -80,30 +102,7 @@ export default function AboutPage() {
         </Link>
       </div>
 
-      <div className='w-full flex flex-col gap-6'>
-        {experienceData.map((data) => (
-          <div
-            key={data.period}
-            className='flex divide-x-2 divide-stone-900 dark:divide-zinc-100'
-          >
-            <p className='w-32'>{data.period}</p>
-
-            <div className='pl-4'>
-              <div className='flex flex-col gap-4'>
-                {data.items.map((item) => (
-                  <div key={item.title}>
-                    <p>{item.title}</p>
-
-                    {item.descriptions.map((description) => (
-                      <li key={description}>{description}</li>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Timeline experienceData={experienceData} />
     </div>
   );
 }

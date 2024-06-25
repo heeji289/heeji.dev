@@ -32,7 +32,7 @@ export default function RootLayout({
         <section className='mx-auto max-w-3xl px-4 pt-20 sm:px-6 xl:mx-w-[50rem] xl:px-8'>
           <div className='box-border flex h-full flex-col justify-between'>
             <Header />
-            <main className='max-w-screen-sm mx-auto pb-6'>{children}</main>
+            <main>{children}</main>
           </div>
         </section>
       </body>
