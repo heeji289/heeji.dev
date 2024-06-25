@@ -1,3 +1,4 @@
+import Giscus from '@/components/Giscus';
 import { Separator } from '@/components/ui/separator';
 import { getAllPosts, getPost } from '@/service/post';
 import { Metadata } from 'next';
@@ -61,6 +62,8 @@ export default async function PostDetailPage({ params }: { params: Param }) {
       <Separator className='my-4' />
 
       <NotionRenderer blockMap={result.blocks} />
+
+      <Giscus />
     </div>
   );
 }
