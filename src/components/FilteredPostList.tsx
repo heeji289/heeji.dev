@@ -37,8 +37,6 @@ const YearSection = ({ year, posts }: { year: string; posts: Post[] }) => {
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
-
-      <Separator className='my-6' />
     </div>
   );
 };
@@ -66,20 +64,24 @@ export default function FilteredPostList({ posts }: { posts: Post[] }) {
 
   return (
     <div className='py-4'>
-      <div className='flex flex-wrap gap-2 py-2'>
+      <div className='flex flex-wrap gap-2 py-4'>
         {tags?.map((tag) => (
           <Chip
             key={tag}
             onClickCallback={() => handleSelectTag(tag)}
             text={tag}
-            theme={tag === selectedTag ? 'destructive' : 'outline'}
+            theme={tag === selectedTag ? 'default' : 'outline'}
           />
         ))}
       </div>
 
       <div className='flex flex-col gap-2 py-6'>
-        {sortedYears.map((year) => (
-          <YearSection key={year} year={year} posts={postsGroupbyYear[year]} />
+        {sortedYears.map((year, index) => (
+          <React.Fragment key={year}>
+            {index !== 0 && <Separator className='my-6' />}
+
+            <YearSection year={year} posts={postsGroupbyYear[year]} />
+          </React.Fragment>
         ))}
       </div>
     </div>

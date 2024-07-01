@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import PostCard from './PostCard';
+import { BiSearchAlt2 } from 'react-icons/bi';
 
 export default function Search() {
   const { isLoading, result, searchResult, query } = useSearch();
@@ -21,7 +22,7 @@ export default function Search() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant='ghost'>
-          <FaSearch />
+          <BiSearchAlt2 size={24} />
         </Button>
       </DialogTrigger>
       <DialogContent

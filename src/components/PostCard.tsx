@@ -6,7 +6,9 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <Link href={`/posts/${post.id}`}>
       <div className='flex justify-between items-center py-2'>
-        <div className='text-lg flex-1'>{post.title}</div>
+        <div className='text-md flex-1 hover:underline hover:decoration-primary hover:decoration-dashed'>
+          {post.title}
+        </div>
         <span className='text-xs flex-shrink-0'>{post.dateWithoutYear}</span>
       </div>
     </Link>

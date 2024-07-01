@@ -4,6 +4,7 @@ import { Theme } from '@/lib/types';
 import React, { useEffect, useState } from 'react';
 import { FaMoon, FaRegSun } from 'react-icons/fa';
 import { Button } from './ui/button';
+import { BiMoon, BiSun } from 'react-icons/bi';
 
 export default function ThemeToggle({
   themeProps = Theme.light,
@@ -28,8 +29,8 @@ export default function ThemeToggle({
   }, []);
 
   return (
-    <Button variant={'ghost'} onClick={handleClickButton}>
-      {theme === Theme.light ? <FaMoon /> : <FaRegSun />}
+    <Button variant={'ghost'} size={'icon'} onClick={handleClickButton}>
+      {theme === Theme.light ? <BiMoon size={24} /> : <BiSun size={24} />}
     </Button>
   );
 }
