@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Button } from './ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,12 +14,23 @@ import {
 } from './ui/dialog';
 import PostCard from './PostCard';
 import { BiSearchAlt2 } from 'react-icons/bi';
+import { usePathname } from 'next/navigation';
 
 export default function Search() {
+  const [open, setOpen] = useState(false);
   const { isLoading, result, searchResult, query } = useSearch();
+  const pathname = usePathname();
+
+  const handleDialogClose = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    handleDialogClose();
+  }, [pathname]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant='ghost'>
           <BiSearchAlt2 size={24} />
