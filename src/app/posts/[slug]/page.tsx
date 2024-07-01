@@ -59,10 +59,7 @@ export default async function PostDetailPage({ params }: { params: Param }) {
         <span>{result.post?.date ?? ''}</span>
       </div>
 
-      <Separator className='my-4' />
-
       <NotionRenderer blockMap={result.blocks} />
-
       <Giscus />
     </div>
   );

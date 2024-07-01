@@ -1,11 +1,28 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Giscus() {
   const ref = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState(
+    document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  );
 
-  const theme = 'light';
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light';
+      setTheme(newTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!ref.current || ref.current.hasChildNodes()) return;
@@ -24,9 +41,8 @@ export default function Giscus() {
     scriptElem.setAttribute('data-reactions-enabled', '1');
     scriptElem.setAttribute('data-emit-metadata', '0');
     scriptElem.setAttribute('data-input-position', 'bottom');
-    scriptElem.setAttribute('data-theme', 'preferred_color_scheme');
+    scriptElem.setAttribute('data-theme', theme);
     scriptElem.setAttribute('data-lang', 'ko');
-    scriptElem.setAttribute('data-loading', 'lazy');
 
     ref.current.appendChild(scriptElem);
   }, [theme]);

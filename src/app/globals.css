@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('../../public/fonts/Pretendard-Regular.ttf');
+}
+
 @layer base {
   :root {
     --background: 120, 60%, 99%;
@@ -64,6 +69,6 @@
   p,
   li,
   blockquote {
-    @apply text-foreground;
+    @apply text-foreground font-pretendard;
   }
 }

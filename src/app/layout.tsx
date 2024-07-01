@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import 'react-notion/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
-import { cookies } from 'next/headers';
-import { IBM_Plex_Mono, Noto_Serif_KR } from 'next/font/google';
-
+import { IBM_Plex_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import Header2 from '@/components/Header2';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/Footer';
@@ -20,9 +19,10 @@ const mono = IBM_Plex_Mono({
   subsets: ['latin'],
 });
 
-const serif = Noto_Serif_KR({
-  weight: '600',
-  subsets: ['latin'],
+const pretendardRegular = localFont({
+  src: '../../public/fonts/Pretendard-Regular.ttf',
+  display: 'swap',
+  variable: '--font-pretendard',
 });
 
 export default function RootLayout({
@@ -30,10 +30,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = cookies().get('theme');
-
   return (
-    <html lang='ko' className={`${theme?.value} ${mono.className}`}>
+    <html
+      lang='ko'
+      className={`${mono.className} ${pretendardRegular.className}`}
+      suppressHydrationWarning={true}
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.remove('dark')
+          }
+          `,
+          }}
+        />
+      </head>
       <body className={`bg-background text-black antialiased dark:text-white`}>
         <section className='mx-auto max-w-3xl xl:mx-w-[50rem] xl:px-8'>
           <div className='box-border flex h-full flex-col justify-between'>

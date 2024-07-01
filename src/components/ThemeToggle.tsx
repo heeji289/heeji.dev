@@ -2,22 +2,17 @@
 
 import { Theme } from '@/lib/types';
 import React, { useEffect, useState } from 'react';
-import { FaMoon, FaRegSun } from 'react-icons/fa';
 import { Button } from './ui/button';
 import { BiMoon, BiSun } from 'react-icons/bi';
 
-export default function ThemeToggle({
-  themeProps = Theme.light,
-}: {
-  themeProps?: Theme;
-}) {
-  const [theme, setTheme] = useState<Theme>(themeProps);
+export default function ThemeToggle() {
+  const [theme, setTheme] = useState<Theme>(Theme.light);
 
   const handleClickButton = () => {
     const toggle = document.documentElement.classList.toggle(Theme.dark);
     const theme = toggle ? Theme.dark : Theme.light;
-    document.cookie = `theme=${theme}`;
     setTheme(theme);
+    window.localStorage.setItem('theme', theme);
   };
 
   useEffect(() => {
