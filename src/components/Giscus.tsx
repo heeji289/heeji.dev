@@ -5,7 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 export default function Giscus() {
   const ref = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState(
-    document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    typeof window !== 'undefined'
+      ? document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light'
+      : 'light'
   );
 
   useEffect(() => {
