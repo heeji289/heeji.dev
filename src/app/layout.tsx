@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   title: 'heeji.dev',
   description: '임희지의 개발 블로그. 프론트엔드 개발 관련 기록을 남깁니다.',
   metadataBase: new URL('https://heeji.dev'),
+  alternates: {
+    types: {
+      'application/rss+xml': 'https://heeji.dev/rss.xml',
+    },
+  },
 };
 
 const mono = IBM_Plex_Mono({
