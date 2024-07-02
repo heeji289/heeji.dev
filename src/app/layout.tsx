@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './notion.css';
 import 'react-notion/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
 import { IBM_Plex_Mono } from 'next/font/google';
@@ -25,8 +26,8 @@ const mono = IBM_Plex_Mono({
   subsets: ['latin'],
 });
 
-const pretendardRegular = localFont({
-  src: '../../public/fonts/Pretendard-Regular.ttf',
+const pretendardMedium = localFont({
+  src: '../../public/fonts/Pretendard-Medium.ttf',
   display: 'swap',
   variable: '--font-pretendard',
 });
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang='ko'
-      className={`${mono.className} ${pretendardRegular.className}`}
+      className={`${mono.className} ${pretendardMedium.className}`}
       suppressHydrationWarning={true}
     >
       <head>
