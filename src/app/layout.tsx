@@ -7,6 +7,7 @@ import localFont from 'next/font/local';
 import Header2 from '@/components/Header2';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/Footer';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'heeji.dev',
@@ -53,6 +54,20 @@ export default function RootLayout({
           `,
           }}
         />
+
+        <Script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+        />
+
+        <Script id='google-analytics'>
+          {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', ${'${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}'});
+          `}
+        </Script>
       </head>
       <body className={`bg-background text-black antialiased dark:text-white`}>
         <section className='mx-auto max-w-3xl xl:mx-w-[50rem] xl:px-8'>
