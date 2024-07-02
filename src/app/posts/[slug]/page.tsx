@@ -55,8 +55,14 @@ export default async function PostDetailPage({ params }: { params: Param }) {
   return (
     <div>
       <div className='py-4'>
-        <h1 className='text-3xl font-semibold'>{result.post?.title ?? ''}</h1>
-        <span>{result.post?.date ?? ''}</span>
+        <h1 className='text-3xl font-bold text-center'>
+          {result.post?.title ?? ''}
+        </h1>
+        <div className='text-center'>
+          <span className='text-sm text-neutral-600'>
+            {result.post?.date ?? ''}
+          </span>
+        </div>
       </div>
 
       <NotionRenderer blockMap={result.blocks} />
