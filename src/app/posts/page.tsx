@@ -1,7 +1,7 @@
 import FilteredPostList from '@/components/FilteredPostList';
-import { getAllPosts } from '@/service/post';
+import { getPostList } from '@/lib/notion2';
 import { Metadata } from 'next';
-import React, { useState } from 'react';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Posts | heeji.dev',
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PostsPage() {
-  const posts = await getAllPosts();
+  const posts = await getPostList();
 
   if (!posts) {
     return <h1>Empty</h1>; // TODO: Empty UI

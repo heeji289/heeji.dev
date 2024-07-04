@@ -1,10 +1,10 @@
 'use client';
 
-import { TOCItem } from '@/lib/types';
+import { TableOfContentsEntry } from 'notion-utils';
 import React, { useEffect, useState, useRef } from 'react';
 
 type TableOfContentsProps = {
-  toc: TOCItem[];
+  toc: TableOfContentsEntry[];
 };
 
 export default function TableOfContents({ toc }: TableOfContentsProps) {
@@ -13,14 +13,16 @@ export default function TableOfContents({ toc }: TableOfContentsProps) {
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const minLevel = Math.min(...toc.map((t) => t.level));
+  const minLevel = Math.min(...toc.map((t) => t.indentLevel));
+
+  const removeHyphens = (str: string): string => str.replace(/-/g, '');
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+            setActiveId(entry.target.getAttribute('data-id') ?? '');
           }
         });
       },
@@ -28,7 +30,10 @@ export default function TableOfContents({ toc }: TableOfContentsProps) {
     );
 
     toc.forEach((heading) => {
-      const element = document.getElementById(heading.id);
+      const element = document.querySelector(
+        `[data-id="${removeHyphens(heading.id)}"]`
+      );
+
       if (element) observerRef.current?.observe(element);
     });
 
@@ -37,7 +42,8 @@ export default function TableOfContents({ toc }: TableOfContentsProps) {
 
   useEffect(() => {
     if (targetId) {
-      const element = document.getElementById(targetId);
+      const element = document.querySelector(`[data-id="${targetId}"]`);
+
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
         setTargetId(null);
@@ -50,22 +56,28 @@ export default function TableOfContents({ toc }: TableOfContentsProps) {
   };
 
   return (
-    <nav className='toc'>
+    <nav className='toc lg:max-w-[200px]'>
       <h2 className='text-xl font-bold mb-4'>목차</h2>
-      <ul className='space-y-2 text-sm'>
+      <ul className='space-y-2 text-sm '>
         {toc.map((heading) => (
           <li
             key={heading.id}
-            style={{ marginLeft: `${(heading.level - minLevel) * 0.5}rem` }}
+            style={{
+              marginLeft: `${(heading.indentLevel - minLevel) * 0.5}rem`,
+            }}
             className={`
-              ${activeId === heading.id ? 'font-bold text-primary' : ''}
+              ${
+                removeHyphens(activeId) === removeHyphens(heading.id)
+                  ? 'font-bold text-primary'
+                  : ''
+              }
             `}
           >
             <a
-              href={`#${heading.id}`}
+              href={`#${removeHyphens(heading.id)}`}
               onClick={(e) => {
                 e.preventDefault();
-                scrollToHeading(heading.id);
+                scrollToHeading(removeHyphens(heading.id));
               }}
               className='hover:text-primary transition-colors'
             >

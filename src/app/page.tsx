@@ -1,16 +1,16 @@
 import PostCard from '@/components/PostCard';
 import { Button } from '@/components/ui/button';
-import { getAllPosts } from '@/service/post';
 import { FiGithub } from 'react-icons/fi';
 import { PiLinkedinLogoBold } from 'react-icons/pi';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
+import { getPostList } from '@/lib/notion2';
 
 const GITHUB_LINK = 'https://github.com/heeji289';
 const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';
 
 export default async function Home() {
-  const posts = await getAllPosts();
+  const posts = await getPostList();
 
   if (!posts) {
     return;
