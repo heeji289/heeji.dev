@@ -11,7 +11,7 @@ type Props = {
 };
 
 // Route segment config
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 // Image metadata
 // export const alt = 'About Acme';
