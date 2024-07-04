@@ -1,7 +1,7 @@
 import { Post } from '@/lib/types';
-import { getAllPosts } from '@/service/post';
 import { useEffect, useState } from 'react';
 import useDebounce from './useDebounce';
+import { getPostList } from '@/lib/notion2';
 
 const useSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,7 @@ const useSearch = () => {
       setIsLoading(true);
 
       try {
-        const posts = await getAllPosts();
+        const posts = await getPostList();
         const filtered = posts?.filter((post) =>
           post.title.includes(debouncedQuery ?? '')
         );

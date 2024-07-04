@@ -2,14 +2,14 @@
 
 .notion {
   font-family: Pretendard, Roboto, sans-serif;
-  @apply dark:text-gray-400;
   overflow-wrap: break-word;
 }
+
 .notion,
 .notion-text,
 .notion-quote,
 .notion-h-title {
-  @apply leading-7 p-0 my-1;
+  @apply leading-7 p-0 my-1 text-foreground;
 }
 
 .notion-toggle {
@@ -86,19 +86,15 @@ pre[class*='language-'] {
   font-size: 1em;
   font-style: italic;
   background: #a3b6c31c;
-  /* box-shadow: 4px 4px 8px #ccc;
-    background: #f7f7f7; */
 }
 
 .notion-link {
-  @apply text-sky-500 border-sky-500;
-  /* color: #0EA5E9; */
-  /* border-color:#0EA5E9; */
+  @apply text-primary border-primary;
   opacity: 1;
 }
 
 .notion-link:hover {
-  @apply text-sky-400 border-sky-400;
+  @apply text-primary border-primary;
 }
 
 .notion-inline-code {
@@ -139,15 +135,14 @@ pre[class*='language-'] {
 .notion-table-of-contents-item {
   @apply text-gray-400;
 }
+
 .notion-table-of-contents-item-body {
   @apply border-b-gray-400;
 }
 
-/* 이미지 좌측으로 */
 .notion-asset-wrapper-image > div {
   align-self: flex-start !important;
 }
-/* 이미지 radius */
 .notion-asset-wrapper img {
   @apply border border-gray-200 dark:border-gray-800;
   border-radius: 9px;

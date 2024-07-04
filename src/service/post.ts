@@ -1,42 +1,22 @@
+import { getRecordMap } from '@/lib/notion';
+import { getPostList } from '@/lib/notion2';
 import { Post } from '@/lib/types';
-import { seperateDate } from '@/lib/utils';
-import { BlockMapType } from 'react-notion';
-
-const NOTION_API_URL = 'https://notion-api.splitbee.io/v1/table/';
-
-const REVALIDATE_TIME = 60 * 60 * 3; // 3시간
-
-export async function getAllPosts(): Promise<Post[] | null> {
-  try {
-    const result: Post[] = await fetch(
-      `${NOTION_API_URL}${process.env.NEXT_PUBLIC_NOTION_BLOG_ID}`,
-      { next: { revalidate: REVALIDATE_TIME } }
-    ).then((res) => res.json());
-
-    return result.map((post) => ({
-      ...post,
-      ...seperateDate(post.date),
-    }));
-  } catch (err) {
-    // error
-    return null;
-  }
-}
+import { ExtendedRecordMap } from 'notion-types';
 
 export async function getPost(
-  id: string
-): Promise<{ blocks: BlockMapType; post: Post | undefined } | null> {
+  slug: string
+): Promise<{ recordMap: ExtendedRecordMap; post: Post | undefined } | null> {
   try {
-    const posts = await getAllPosts();
+    const posts = await getPostList();
+    const post = posts?.find((post) => post.slug === slug);
 
-    const post = posts?.find((post) => post.id === id);
+    if (!post) {
+      return null;
+    }
 
-    const blocks: BlockMapType = await fetch(
-      `https://notion-api.splitbee.io/v1/page/${id}`,
-      { next: { revalidate: REVALIDATE_TIME } }
-    ).then((res) => res.json());
+    const recordMap = await getRecordMap(post.id);
 
-    return { blocks, post };
+    return { post, recordMap };
   } catch (err) {
     // error
     return null;

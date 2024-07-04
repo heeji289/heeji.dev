@@ -15,7 +15,7 @@ export type Post = {
   date: string;
   year: string;
   dateWithoutYear: string;
-  pinned?: string; // true, false
+  pinned?: boolean;
 };
 
 export enum Theme {
@@ -25,6 +25,6 @@ export enum Theme {
 
 export type TOCItem = {
   id: string;
-  text: string;
+  title: string;
   level: number;
 };

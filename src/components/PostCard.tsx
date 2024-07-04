@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <Link href={`/posts/${post.id}`}>
+    <Link href={`/posts/${post.slug}`}>
       <div className='flex justify-between items-center py-2'>
         <div className='text-md flex-1 hover:underline hover:decoration-primary hover:decoration-dashed'>
           {post.title}

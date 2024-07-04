@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import './notion.css';
-import 'react-notion/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
 import { IBM_Plex_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
@@ -9,6 +7,9 @@ import Header2 from '@/components/Header2';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/Footer';
 import Script from 'next/script';
+import 'react-notion-x/src/styles.css';
+import 'prismjs/themes/prism-tomorrow.css';
+import './notion.css';
 
 export const metadata: Metadata = {
   title: 'heeji.dev',

@@ -1,8 +1,8 @@
-import { getAllPosts } from '@/service/post';
+import { getPostList } from '@/lib/notion2';
 import RSS from 'rss';
 
 export async function GET() {
-  const posts = await getAllPosts();
+  const posts = await getPostList();
 
   const feed = new RSS({
     title: 'heeji.dev',

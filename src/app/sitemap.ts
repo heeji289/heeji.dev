@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/service/post';
+import { getPostList } from '@/lib/notion2';
 import { MetadataRoute } from 'next';
 
 const baseURL = 'https://heeji.dev';
@@ -26,7 +26,7 @@ const aboutPageEntry: SitemapEntry = {
 };
 
 async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getAllPosts();
+  const posts = await getPostList();
 
   const postEntries =
     posts?.map((post) => ({
