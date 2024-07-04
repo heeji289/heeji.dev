@@ -152,7 +152,3 @@ pre[class*='language-'] {
   @apply border border-gray-200 dark:border-gray-800;
   border-radius: 9px;
 }
-
-.notion-list-numbered {
-  @apply p-0 !important;
-}
