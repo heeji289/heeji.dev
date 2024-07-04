@@ -22,3 +22,9 @@ export enum Theme {
   dark = 'dark',
   light = 'light',
 }
+
+export type TOCItem = {
+  id: string;
+  text: string;
+  level: number;
+};
