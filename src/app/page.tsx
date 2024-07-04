@@ -6,6 +6,9 @@ import { PiLinkedinLogoBold } from 'react-icons/pi';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 
+const GITHUB_LINK = 'https://github.com/heeji289';
+const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';
+
 export default async function Home() {
   const posts = await getAllPosts();
 
@@ -25,8 +28,17 @@ export default async function Home() {
         <div className='flex space-x-2'>
           <div>Social Links:</div>
           <div className='flex gap-2'>
-            <FiGithub size={26} />
-            <PiLinkedinLogoBold size={26} />
+            <Link href={GITHUB_LINK} rel='noopener noreferrer' target='_blank'>
+              <FiGithub size={26} />
+            </Link>
+
+            <Link
+              href={LINKEDIN_LINK}
+              rel='noopener noreferrer'
+              target='_blank'
+            >
+              <PiLinkedinLogoBold size={26} />
+            </Link>
           </div>
         </div>
       </section>
