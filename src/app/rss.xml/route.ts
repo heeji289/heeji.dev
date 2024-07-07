@@ -17,8 +17,8 @@ export async function GET() {
   posts?.forEach((post) => {
     feed.item({
       title: post.title,
-      guid: `https://heeji.dev/${post.id}`,
-      url: `https://heeji.dev/${post.id}`,
+      guid: `https://heeji.dev/${post.slug}`,
+      url: `https://heeji.dev/${post.slug}`,
       date: post.date, // TODO: 노션DB에 updateDate추가하고 변경할 것
       description: post?.slug ?? '',
       author: '임희지',

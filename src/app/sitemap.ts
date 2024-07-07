@@ -30,7 +30,7 @@ async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postEntries =
     posts?.map((post) => ({
-      url: createUrl(`/posts/${post.id}`),
+      url: createUrl(`/posts/${post.slug}`),
       lastModified: new Date(),
     })) ?? [];
 
