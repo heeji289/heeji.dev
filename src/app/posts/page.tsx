@@ -1,7 +1,7 @@
 import FilteredPostList from '@/components/FilteredPostList';
-import { getPostList } from '@/lib/notion2';
 import { Metadata } from 'next';
 import React from 'react';
+import { allPosts } from 'content-collections';
 
 export const metadata: Metadata = {
   title: 'Posts | heeji.dev',
@@ -9,15 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PostsPage() {
-  const posts = await getPostList();
-
-  if (!posts) {
+  if (!allPosts) {
     return <h1>Empty</h1>; // TODO: Empty UI
   }
 
-  return (
-    <>
-      <FilteredPostList posts={posts} />
-    </>
-  );
+  return <FilteredPostList />;
 }

@@ -4,14 +4,12 @@ import { FiGithub } from 'react-icons/fi';
 import { PiLinkedinLogoBold } from 'react-icons/pi';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
-import { getPostList } from '@/lib/notion2';
+import { allPosts as posts } from 'content-collections';
 
 const GITHUB_LINK = 'https://github.com/heeji289';
 const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';
 
 export default async function Home() {
-  const posts = await getPostList();
-
   if (!posts) {
     return;
   }
@@ -48,7 +46,7 @@ export default async function Home() {
           Featured
         </span>
         {pinnedPosts.map((post) => (
-          <PostCard key={post.id} post={post} />
+          <PostCard key={post._meta.path} post={post} />
         ))}
       </div>
 
@@ -57,7 +55,7 @@ export default async function Home() {
           Recent Posts
         </span>
         {posts.slice(0, 5).map((post) => (
-          <PostCard key={post.id} post={post} />
+          <PostCard key={post._meta.path} post={post} />
         ))}
       </div>
 

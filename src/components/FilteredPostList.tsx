@@ -1,11 +1,11 @@
 'use client';
 
-import { Post } from '@/lib/types';
 import { convertToUniqArray } from '@/lib/utils';
 import React, { useState } from 'react';
 import PostCard from './PostCard';
 import Chip from './ui/Chip';
 import { Separator } from './ui/separator';
+import { allPosts, Post } from 'content-collections';
 
 type PostGroupByYear = {
   [key in string]: Post[];
@@ -14,7 +14,8 @@ type PostGroupByYear = {
 // util
 const groupPostsByYear = (posts: Post[]): PostGroupByYear => {
   return posts.reduce((acc: PostGroupByYear, post) => {
-    const year = post.year;
+    const year = post.date.split('-')[0];
+
     if (!acc[year]) {
       acc[year] = [];
     }
@@ -35,7 +36,7 @@ const YearSection = ({ year, posts }: { year: string; posts: Post[] }) => {
     <div>
       <h1 className='text-2xl font-bold mb-2'>{year}</h1>
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post._meta.path} post={post} />
       ))}
     </div>
   );
@@ -43,17 +44,17 @@ const YearSection = ({ year, posts }: { year: string; posts: Post[] }) => {
 
 // ************************************************************
 
-export default function FilteredPostList({ posts }: { posts: Post[] }) {
+export default function FilteredPostList() {
   const [selectedTag, setSelectedTag] = useState('');
 
   const tags = convertToUniqArray(
-    posts?.flatMap((post) => post.tags).filter((tag) => tag != null) ?? []
+    allPosts?.flatMap((post) => post.tags).filter((tag) => tag != null) ?? []
   );
 
   const filteredPosts =
     selectedTag !== ''
-      ? posts.filter((post) => post.tags?.includes(selectedTag))
-      : posts;
+      ? allPosts.filter((post) => post.tags?.includes(selectedTag))
+      : allPosts;
 
   const postsGroupbyYear = groupPostsByYear(filteredPosts);
   const sortedYears = sortByYear(postsGroupbyYear);

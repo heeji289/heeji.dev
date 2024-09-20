@@ -1,11 +1,8 @@
 import Giscus from '@/components/Giscus';
-import NotionPage from '@/components/NotionPage';
+import Markdown from '@/components/Markdown';
 import TableOfContents from '@/components/TableOfContents';
-import { getPostList } from '@/lib/notion2';
-import { getPost } from '@/service/post';
+import { allPosts } from 'content-collections';
 import { Metadata } from 'next';
-import { Block, ExtendedRecordMap, PageBlock } from 'notion-types';
-import { getPageTableOfContents } from 'notion-utils';
 import React from 'react';
 
 type Param = {
@@ -17,68 +14,66 @@ export async function generateMetadata({
 }: {
   params: Param;
 }): Promise<Metadata> {
-  const result = await getPost(params.slug);
+  const result = allPosts.find((post) => post._meta.path === params.slug);
 
   return {
-    title: result?.post?.title ?? '',
+    title: result?.title ?? '',
     authors: [{ name: ' 임희지', url: 'https://heeji.dev' }],
-    keywords: result?.post?.tags ?? [],
+    keywords: result?.tags ?? [],
     openGraph: {
-      title: result?.post?.title ?? '',
+      title: result?.title ?? '',
       siteName: 'heeji.dev',
       locale: 'ko_KR',
       type: 'article',
       authors: '임희지',
-      tags: result?.post?.tags ?? [],
+      tags: result?.tags ?? [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: result?.post?.title ?? '',
+      title: result?.title ?? '',
       creator: '@huge_0314',
     },
   };
 }
 export async function generateStaticParams() {
-  const posts = await getPostList();
   return (
-    posts?.map((post) => ({
-      slug: post.slug,
+    allPosts?.map((post) => ({
+      slug: post._meta.path ?? '',
     })) ?? []
   );
 }
 
 export default async function PostDetailPage({ params }: { params: Param }) {
-  const result = await getPost(params.slug);
+  const post = allPosts.find((post) => post._meta.path === params.slug);
 
-  if (!result || !result.post) {
+  if (!post) {
     return <div>Post not found</div>;
   }
 
-  const pageBlock = Object.values(result.recordMap.block).find(
-    (block) => block.value.type === 'page'
-  )?.value as PageBlock;
-
-  const toc = getPageTableOfContents(pageBlock, result.recordMap);
+  // const toc = getPageTableOfContents(pageBlock, result.recordMap);
 
   return (
     <div className='container mx-auto px-0 relative'>
-      <div className='py-4'>
-        <h1 className='text-3xl font-bold text-center'>{result.post.title}</h1>
-        <div className='text-center'>
-          <span className='text-sm text-neutral-600'>{result.post.date}</span>
+      <div className='py-8'>
+        <h1 className='font-bold text-4xl'>{post.title}</h1>
+        <div>
+          <span className='text-lg text-stone-500'>{post.date}</span>
         </div>
       </div>
 
+      <div className='lg:max-w-3xl'>
+        <Markdown code={post.mdx} />
+        <Giscus />
+      </div>
+      {/* TODO: TOC */}
+      {/*
       <div className='mb-8 lg:fixed lg:left-[calc(50%-38rem)] lg:z-10 lg:w-[18rem] lg:top-[5rem] lg:bottom-0 lg:overflow-y-auto'>
         <nav className='lg:py-10'>
           <TableOfContents toc={toc} />
         </nav>
       </div>
 
-      <div className='lg:max-w-3xl lg:mr-auto'>
-        <NotionPage recordMap={result.recordMap} />
-        <Giscus />
-      </div>
+     */}
     </div>
   );
 }
