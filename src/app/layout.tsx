@@ -7,9 +7,6 @@ import Header2 from '@/components/Header2';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/Footer';
 import Script from 'next/script';
-import 'react-notion-x/src/styles.css';
-import 'prismjs/themes/prism-tomorrow.css';
-import './notion.css';
 
 export const metadata: Metadata = {
   title: 'heeji.dev',
@@ -74,7 +71,9 @@ export default function RootLayout({
           <div className='box-border flex h-full flex-col justify-between'>
             <Header2 />
             <Separator className='dark:bg-primary' />
-            <main className='pb-6 px-4'>{children}</main>
+            <main className='pb-6 px-4 border-zinc-100 border-2'>
+              {children}
+            </main>
             <Footer />
           </div>
         </section>

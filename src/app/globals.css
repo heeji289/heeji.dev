@@ -8,56 +8,12 @@
 }
 
 @layer base {
-  :root {
-    --background: 120, 60%, 99%;
-    --foreground: 300, 1%, 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
-    --primary: 204, 74%, 40%;
-    --primary-foreground: 26 83.3% 14.1%;
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 20 14.3% 4.1%;
-    --radius: 0.95remrem;
+  html {
+    @apply scroll-smooth;
   }
 
-  .dark {
-    --background: 12, 6%, 15%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-    --primary: 27, 96%, 61%;
-    --primary-foreground: 26 83.3% 14.1%;
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 35.5 91.7% 32.9%;
-  }
-
-  * {
-    @apply border-border;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-base-700 dark:bg-base-800 dark:text-base-300;
   }
 
   h1,
@@ -65,10 +21,15 @@
   h3,
   h4,
   h5,
-  h6,
-  p,
-  li,
-  blockquote {
-    @apply text-foreground font-pretendard;
+  h6 {
+    @apply text-base-900 dark:text-base-50;
   }
+
+  /* ::selection {
+    @apply bg-cyan-500 text-base-50;
+  } */
+
+  /* *:focus-visible {
+    @apply rounded-md outline-none ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-base-800;
+  } */
 }

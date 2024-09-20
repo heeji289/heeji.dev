@@ -1,5 +1,5 @@
-import { getPost } from '@/service/post';
 import clsx from 'clsx';
+import { allPosts } from 'content-collections';
 import { ImageResponse } from 'next/og';
 
 type Params = {
@@ -25,8 +25,9 @@ export const contentType = 'image/png';
 // Image generation
 export default async function Image({ params }: Props) {
   const slug = params.slug;
-  const result = await getPost(params.slug);
-  const post = result?.post;
+
+  // TODO: 필터 함수 공통으로 만들기
+  const result = allPosts.find((post) => post._meta.path === params.slug);
 
   if (!result) {
     return new Response(
@@ -57,7 +58,7 @@ export default async function Image({ params }: Props) {
         }}
       >
         <div tw='w-full h-full flex flex-col justify-between'>
-          <span tw='text-7xl font-bold'>{post?.title ?? ''}</span>
+          <span tw='text-7xl font-bold'>{result?.title ?? ''}</span>
           <div tw='flex items-center justify-between'>
             <span tw='font-bold text-4xl'>heeji.dev</span>
             {/* <img
