@@ -1,0 +1,430 @@
+---
+title: 리액트 바닥부터 만들어보기 (1) - 전체적인 구조와 가상DOM
+summary: 바닐라 자바스크립트를 활용해 리액트 핵심 기능을 구현해보았습니다.
+date: 2024-09-10
+image: https://images.unsplash.com/photo-1492112007959-c35ae067c37b
+tags:
+  - javascript
+  - react
+  - project
+pinned: true
+---
+
+# 1. 계기
+
+이번에 리액트의 핵심 기능들을 직접 구현해보며 그 내부 동작을 깊이 이해하고자 프로젝트를 진행했습니다. 이 글에서는 JSX와 가상 DOM에 대해 구현 과정을 공유하려고 한다.
+
+최근 한국과 해외 모두에서 React를 베이스로 하는 프로젝트가 많습니다. Next.js도 React 프레임워크로, 널리 사용되고 있죠. 이전 회사와 여러 부트캠프들에서도 당연하게 React를 기술 스택으로 선정했습니다.
+
+퇴사 후 기본기를 다지며 “과연 내가 React를 제대로 이해하고 있을까?” 하는 의문이 들었습니다. 특히 React의 핵심 컨셉인 가상DOM이 어떻게 동작하는지 useState를 활용하는 상태 관리는 어떻게 작동할 지 더 자세히 알고 싶었습니다. 그래서 React를 바닥부터 만들어보며 핵심 개념을 익히고자 이 프로젝트를 시작하게 되었습니다. 부가적으로 최근 보완한 자바스크립트 기본기를 활용해 볼 좋은 기회라고 생각했습니다.
+
+# 2. JSX
+
+## JSX란?
+
+React를 처음 배울 때, JSX 문법을 제일 처음 접하게 될 겁니다. JSX는 JavaScript XML의 약자로, React에서 UI를 표현하기 위해 사용하는 문법입니다. JavaScript 파일 안에서 HTML과 유사한 마크업을 작성할 수 있게 해주어 별다르게 문법을 배우지 않아도 쉽게 작성할 수 있다는 장점이 있죠.
+
+그러면 JSX 문법을 꼭 사용해야 할까요? 그렇진 않습니다. 아래와 같이 작성할 수도 있어요. (React v18에서는 `createElement`가 레거시가 되었네요)
+
+```jsx
+function Greeting({ name }) {
+  return createElement('h1', { className: 'greeting' }, 'Hello World');
+}
+```
+
+이는 곧 아래 JSX 코드와 같습니다.
+
+```jsx
+function Greeting() {
+  return <h1 className='greeting'>Hello World</h1>;
+}
+```
+
+확실히 JSX를 사용한 아래 코드가 더 직관적이고 읽기 쉽습니다. 복잡한 마크업의 경우 `createElement`를 사용하면 코드가 매우 복잡해질 수 있습니다.
+
+## JSX 변환
+
+리액트 만들기 프로젝트에서의 첫 번째 과제는 JSX를 JavaScript로 변환하는 과정이었습니다. 처음에는 JSX 문법을 변환하는 파서를 직접 만들어 더 깊이 들어갈까 고민했습니다. 하지만 이게 내 주 목적에 맞나? 했을 때, 아니라는 결론이 나왔고 도구의 도움을 받기로 했습니다.
+
+저는 프로젝트 세팅을 할 때, vite를 주로 사용합니다. vite는 번들러, 트랜스파일러, 개발 서버 등을 포함한 종합적인 프론트엔드 개발 환경 구축 도구입니다. https://ko.vitejs.dev/guide/ 참고. webpack, babel로 구축해본 적도 있는데 (이 글 참고) 이것저것 해주어야 할 것들이 많은데 vite는 명령어 한 줄이면 정말 간단하게 구축해주기 때문에 애용합니다.
+
+```
+💡 용어 설명
+- 번들러: 여러 개의 파일을 하나의 파일로 묶어주는 도구입니다.
+- 트랜스파일러: 한 프로그래
+```
+
+vite를 활용해 다음 단계를 진행해 기본 틀을 만들어줍니다.
+
+1. 프로젝트 생성 `yarn create vite . --template vanilla`
+2. `vite.config.js` 파일 생성
+
+vite.config에서 esbuild 옵션을 지정해줄 수 있습니다. esbuild란?
+
+https://esbuild.github.io/api/#jsx-factory
+
+```jsx
+export default defineConfig({
+  esbuild: {
+    jsxFactory: 'createElement',
+  },
+});
+```
+
+이 설정을 추가해주면 JSX 문법이 createElement 함수 호출로 변환되도록 설정해주는 것입니다.
+
+안쓰고 webpack, babel 사용해서 하는 법
+
+https://babeljs.io/docs/babel-plugin-transform-react-jsx 참고
+
+위의 설정으로 JSX 코드는 다음과 같이 변환됩니다.
+
+```jsx
+function App() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+```
+
+```jsx
+function App() {
+  return createElement('div', null, createElement('h1', null, 'Hello World'));
+}
+```
+
+`createElement` 함수로 변환만 해줬고 실제 구현된 `createElement`를 import 해주어야 합니다. 근데 매번.. 컴포넌트를 작성할 때마다 import할 생각을 하니 힘들더라고요. esbuild 옵션을 뒤져보니 `jsxInject`라는 옵션이 있었습니다. jsx 파일 상단에 설정한 구문을 주입해줍니다.
+
+다음과 같이 설정하면 됩니다.
+
+```jsx
+export default defineConfig({
+  esbuild: {
+    jsxFactory: 'createElement',
+    // 추가. createElement 구현체 import.
+    jsxInject: `import { createElement } from '@/src/jsx-transpiler'`,
+  },
+});
+```
+
+이 설정으로 인해 JSX 코드는 다음과 같이 변환된다.
+
+```jsx
+import { createElement, Fragment } from '@/src/mini-react/jsx-transpiler';
+
+function App() {
+  return createElement('div', null, createElement('h1', null, 'Hello World'));
+}
+```
+
+# 3. 가상 DOM
+
+JSX가 JavaScript 코드로 변환되면, createElement가 호출되도록 만들었습니다. 이 함수의 역할은 무엇일까요? 바로 가상 DOM을 생성하는 것입니다. 실제로는 JavaScript “객체”를 만드는 과정입니다.
+
+## 가상DOM이란?
+
+일단 가상DOM이 무엇인지 짚고 넘어갈까요. 가상DOM은 실제DOM의 가벼운 복사본입니다. React는 이를 사용해 실제 DOM 조작을 최소화하고 성능을 개선합니다.
+
+(그림 추가)
+
+## 3-1. 가상DOM으로 변환하기
+
+가상DOM 객체를 뜯어보면 아래와 같이 생겼습니다. 엘리먼트 type, props, children 배열 입니다. 앞의 예제를 가져왔는데요
+
+```jsx
+function App() {
+  return createElement('div', null, createElement('h1', null, 'Hello World'));
+}
+```
+
+이게 아래와 같은 형태의 객체로 변환되도록 해야합니다. (실제 리액트에서는 props 내부에 children이 존재하는 형태입니다. 저는 코드를 조금 더 간결하게 하고 싶어 따로 분리했어요)
+
+```jsx
+{
+	type: 'div',
+	props: {},
+	children: [
+		{
+			type: 'h1',
+			props: {},
+			children: ['Hello World']
+		}
+	]
+}
+```
+
+그러면 `createElement`는 이런 형태가 되어야겠죠.
+
+```jsx
+export function createElement(type, props, ...children) {
+  return {
+    type,
+    props,
+    children,
+  };
+}
+```
+
+여기서 끝나면 안되고 한 가지 더 생각해볼 게 있습니다. 이 상태에서는 `children: [’Hello World’, {type: ‘div’, props: {}, children: []]` 이런 식으로 children 배열의 형태가 일치하지 않습니다. 객체와 문자열이 같이 존재할 수 있으니까요.
+
+여기서 고민을 했는데, 이 상태 그대로 두고 이 가상DOM 객체를 실제DOM으로 변환하는 과정에서 타입이 string이면 분기로 처리해주는 방식을 고안했고 그렇게 하면 `if (typeof node === ‘string’)` 구문이 들어가게 됩니다. 이렇게 구현했을 때, 구현상의 큰 어려움은 없었지만 저 분기문을 딱 봤을 때 이게 뭘 분기치는거였더라? 이런 생각이 들더라고요. 일주일만 지나도 이해못할 코드일 것 같았습니다.
+
+어떻게하면 이 문제를 해결할 수 있을까? 아이디어가 떠오르지 않아 다른 사람들은 어떻게 했을까 눈물의 서치를 한 결과 이 글을 발견했습니다. https://pomb.us/build-your-own-react/ (이 분은 fiber tree, working queue 개념도 모두 도입하여 리액트 만들기를 했으니 읽어보면 매우 도움이 될 겁니다.)
+
+이 글 초반부에 문자열을 객체로 만들어 규격을 통일시키는 부분을 보고 이거다! 하고 가져왔습니다. ‘Hello Wolrd’ 문자열을 아래와 같이 변환해 객체로 만들어주는 거죠.
+
+```jsx
+{
+	type: 'TEXT_NODE',
+	props: {
+		nodeValue: 'HEllo World'
+	},
+	children: []
+}
+```
+
+이렇게 바꿔도 어쨌든 실제DOM으로 변환할 때는 분기문을 쳐야합니다. document.createElement랑 document.createTextNode를 분리해야하거든요. 하지만 `if (typeof node === ‘string’)` 보다 `if (node.type === ‘TEXT_NODE’)`가 더 읽기 쉽고 직관적인 것 같네요.
+
+그러면 `createElement`에서 문자열을 텍스트 노드로 바꿔주는 로직이 필요합니다.
+
+문자열을 객체로 바꾸는 함수 `createTextElement`를 만들어주고,
+
+```jsx
+export function createTextElement(text) {
+  return {
+    type: 'TEXT_ELEMENT',
+    props: {
+      nodeValue: text,
+    },
+    children: [],
+  };
+}
+```
+
+`createElement`에서 타입이 객체가 아니면 텍스트 노드로 변환하는 함수를 호출해 변경해줍니다.
+
+```jsx
+export function createElement(type, props, ...children) {
+  return {
+    type,
+    props,
+    children: children.flatMap((child) =>
+      typeof child === 'object' ? child : createTextElement(child)
+    ),
+  };
+}
+```
+
+아 그래서 객체만 계속 만들고 이거 화면에 그릴 수 있는거야??? 이제 해봅시다.
+
+## 3-2. 실제로 그려보자
+
+그럼 이제 react.js 코드를 만들어봅시다.
+
+이번 단계에서는 다음 2가지를 완성해볼게요.
+
+1. 루트 컴포넌트와 이것을 넣을 HTML element를 설정해주는 부분
+2. 반환된 가상DOM을 실제DOM으로 변환해 실제 브라우저에 그리는 부분
+
+```jsx
+const React = () => {
+  const render = (vnode, container) => {
+    // #app에 root 컴포넌트를 추가해주는 과정
+    // _render로 초기 렌더링
+  };
+
+  const _render = () => {
+    // createDOM으로 실제DOM을 만들고
+    // container에 붙여줍니다.
+  };
+
+  const createDOM = (vnode) => {
+    // 가상DOM을 실제DOM으로 변경해줍니다.
+  };
+
+  return {
+    createRoot,
+  };
+};
+
+export const { createRoot } = React();
+```
+
+이렇게 틀을 짜보았습니다. React 프로젝트의 main.jsx에서 루트 컴포넌트와 이것을 넣을 DOM element를 querySelector로 설정해주는 부분이 있습니다. 이걸 저는 `render` 함수로 해주도록 하겠습니다. 추가로 `_render` 함수를 만들었는데요 지금 단계에서는 굳이 필요 없지만 useState를 나중에 추가할 때 사용할 것이라 분리해두겠습니다. `_render` 함수에서는 가상DOM을 실제DOM으로 변환하고 브라우저에 그리는 로직을 추가할 겁니다.
+
+```jsx
+const React = () => {
+  let _container;
+  let _vnode;
+
+  const render = (vnode, container) => {
+    // #app에 root 컴포넌트를 추가해주는 과정
+    // _render로 초기 렌더링
+    _container = container;
+    _vnode = vnode;
+    _render();
+  };
+
+  const _render = () => {
+    // createDOM으로 실제DOM을 만들고
+    // container에 붙여줍니다.
+    const dom = createDOM(_vnode);
+    _container.innerHTML = '';
+    _container.appendChild(dom);
+  };
+
+  const createDOM = (vnode) => {
+    // 가상DOM을 실제DOM으로 변경해줍니다.
+  };
+
+  return {
+    createRoot,
+  };
+};
+
+export const { createRoot } = React();
+```
+
+`render` 함수에서는 vnode, container를 매개변수로 받고 (각 각, 루트 컴포넌트가 가상DOM으로 변환된 값, element) React 내부 변수에 할당해주고 `_render`를 호출해주도록 했습니다. \_container, \_vnode 변수를 함수들에서 사용할 수 있도록 해두었어요.
+
+`_render` 함수에서는 createDOM으로 실제DOM을 만든 후, 컨테이너에 appendChild로 붙여주면 끝입니다. 간단하죠
+
+이제 createDOM을 만들어야 하네요. 얘도 간단합니다 type에 맞는 DOM element를 만들고 props를 attribute에 추가해주고 자식들을 여기에 붙여주면 끝이겠네요! 이 부분은 사실 크게 어려운 부분은 없었고 가상 DOM이 브라우저에 그려지는 과정을 이전보다 구체적으로 알 수 있게 되었습니다.
+
+`createDOM` 부분만 이제 추가하겠습니다.
+
+```jsx
+const createDOM = (vnode) => {
+  // 가상DOM을 실제DOM으로 변경해줍니다.
+  // (1)
+  if (vnode.type === 'TEXT_ELEMENT') {
+    return document.createTextNode(vnode.props.nodeValue);
+  }
+
+  const dom = document.createElement(vnode.type);
+
+  // (2) props를 dom에 반영
+  // 부가적인 처리가 필요한데 지금은 이정도만 만들어두겠습니다.
+  for (const [key, value] of Object.entries(vnode.props ?? {})) {
+    dom.setAttribute(key, value);
+  }
+
+  // (3) children을 dom에 붙임
+  vnode.children?.forEach((child) => {
+    dom.appendChild(createDOM(child));
+  });
+
+  return dom;
+};
+```
+
+(1) type이 `TEXT_ELEMENT`이면 텍스트 노드를 만들어주고 아니면 type에 맞는 엘리먼트를 만들어줍니다.
+
+(2) props를 attribute에 추가해줍니다. 지금은 아주 간단히 추가했는데 더 예외 처리 해줄 것들이 있어요 나중에 해줄게요
+
+(3) 이제 자식들을 순회하면서 재귀적으로 `createDOM`을 호출해준 뒤, 루트 엘리먼트에 추가해주면 됩니다.
+
+여기까지 코드입니다.
+
+react.js
+
+```jsx
+const React = () => {
+  let _container;
+  let _vnode;
+
+  const render = (vnode, container) => {
+    // #app에 root 컴포넌트를 추가해주는 과정
+    // _render로 초기 렌더링
+    _container = container;
+    _vnode = vnode;
+    _render();
+  };
+
+  const _render = () => {
+    // createDOM으로 실제DOM을 만들고
+    // container에 붙여줍니다.
+    const dom = createDOM(_vnode);
+    _container.innerHTML = '';
+    _container.appendChild(dom);
+  };
+
+  const createDOM = (vnode) => {
+    // 가상DOM을 실제DOM으로 변경해줍니다.
+    if (vnode.type === 'TEXT_ELEMENT') {
+      console.log(vnode);
+
+      return document.createTextNode(vnode.props.nodeValue);
+    }
+
+    const dom = document.createElement(vnode.type);
+
+    // props를 dom에 반영
+    // 부가적인 처리가 필요한데 지금은 이정도만 만들어두겠습니다.
+    for (const [key, value] of Object.entries(vnode.props ?? {})) {
+      dom.setAttribute(key, value);
+    }
+
+    // children을 dom에 붙임
+    vnode.children?.forEach((child) => {
+      dom.appendChild(createDOM(child));
+    });
+
+    return dom;
+  };
+
+  return {
+    render,
+  };
+};
+
+export const { render } = React();
+```
+
+이제 실제 브라우저에 그려지는지 테스트 해볼게요!
+
+index.html
+
+```jsx
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
+
+```
+
+main.js
+
+```jsx
+import * as React from './mini-react/react';
+import App from './App';
+
+React.createRoot(App(), document.querySelector('#app'));
+```
+
+App.jsx
+
+```jsx
+export default function App() {
+  return <h1>Hello World</h1>;
+}
+```
+
+여기까지 코드 작성하고 yarn dev 해주면 짜잔~~ Hello World 출력 완료.
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/44096953-0104-48ab-86b2-0f4d291e53be/63c3f798-a0a4-4b2b-b346-f668fd7ed96a/image.png)
+
+# 4. 다음단계
+
+근데 이건 가상DOM의 효과를 제대로 보지 못하고 있죠 useState도 없고요! 지금까지는 빌드업 단계입니다. 게임하다보면 완성 아이템 바로 만드는게 아니라 재료 아이템 만들고 합쳐가면서 맞추잖아요? 다음 글에서 채워보겠습니다.

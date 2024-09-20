@@ -1,0 +1,75 @@
+---
+title: '우당탕탕 React Hook 이해기 (useCallback, useMemo, useLayoutEffect)'
+summary: 회사에서 사용하기 어려웠던 React hook 3개에 대해 내가 이해한 언어로 정리해보려 한다.
+date: 2022-05-17
+image: https://images.unsplash.com/photo-1492112007959-c35ae067c37b
+tags:
+  - react
+pinned: false
+---
+
+> 회사에 들어와서 사용하기 어려웠던 React hook 3개에 대해 내가 이해한 언어로 정리해보려 한다. 3개월 가까이 React-Native를 다루며 hook에 대해 어느정도 안다고 생각했는데 막상 글을 쓰기 위해 자료를 더 찾고 정리를 해보니 아직 잘 모른다는 것을 알게 되었다.
+
+![image](https://blog.kakaocdn.net/dn/YtbfE/btrRADzCa9a/PKOO0VvvqTCc1s92CQCU9k/img.png)
+
+### useLayoutEffect와 useEffect
+
+> 리액트 공식문서에서는 useLayoutEffect를 이렇게 설명한다. useEffect와 기본적으로 하는 역할은 같지만 모든 DOM mutation (변형) 이후 paint하기 전에 동기적으로 실행
+
+![image](https://blog.kakaocdn.net/dn/UIgJG/btrRz03agzq/68KRCrT8YHYFm5HWDXuLwk/img.jpg)
+
+useEffect, useLayoutEffect 흐름도 (useEffect는 비동기임!)
+
+- **useEffect**: 브라우저가 DOM mutation을 모두 계산하고 그리고나서 hook안의 동작이 수행된다. (paint를 방해하지 않기 위해 비동기적으로 수행된다.) 만약 hook 안에 있는 동작이 DOM mutation에 영향을 주는 동작이라면 useEffect를 쓸 경우에 화면이 부자연스럽거나 깜빡거릴 수 있다.
+- **useLayoutEffect**: paint하기 전 동기적으로 수행된다. 따라서 hook 실행이 오래 걸려 화면에 큰 영향을 준다면 (ex. 빈 화면) useEffect를 사용하는 것이 낫다.
+
+정확한 차이는 이해했지만 언제 어떤걸 쓰는 게 좋은지는 100% 알지 못한다. 실무에서도 거의 useEffect를 쓰고 문제가 생겼을 때 (깜빡임이라던가) useLayoutEffect를 쓰고 있다.
+
+###
+
+### useCallback와 useMemo
+
+- 리액트에서 함수형 컴포넌트들은 props, state가 변경되거나 부모 컴포넌트가 렌더링될 때 리렌더링된다.
+- 이 훅들은 회사에 들어오기 전엔 거의 쓰지 않았다. 특별히 리렌더링이 많이 일어나거나 최적화가 필요할 만큼 무거운 작업을 해본 적이 없기 때문이다. 실무에서는 함수나 컴포넌트를 재사용해서 똑같은 함수를 다시 만들거나 복잡한 컴포넌트를 다시 계산하고 그리는 일이 없도록 해야하는 경우가 많았다.
+
+![image](https://blog.kakaocdn.net/dn/O0YTV/btrRC0Oljav/dzx81TR5MtYTCDm7R2M1yK/img.png)
+
+코드 실행 결과
+
+- 처음 쓸 때 가장 혼란스러웠던 건 useCallback과 useMemo 사용새가 비슷하다는 것이었다. 위의 코드를 보면, 둘 다 return으로 React element를 쓸 수 있고 dependency를 받는 형태도 똑같다. 하지만 공식문서에서는 useCallback은 함수를 기억할 때, useMemo는 함수형 컴포넌트를 기억하는 것이라 나와있다. (지금 다시보니까 완전 다른데 왜 헷갈렸는지 모르겠다
+
+---
+
+(a) useMemo (b) useCallback을 사용해 배열 안의 내용을 렌더링
+
+![image](https://blog.kakaocdn.net/dn/bTKgNi/btrRz0hMLoU/UEMJnA8rzlqWq2wherJyM1/img.jpg)
+
+![image](https://blog.kakaocdn.net/dn/dkePuc/btrRA9SxB5T/xWhF9QS31X3OZzEQ2t0jCk/img.jpg)
+
+**useMemo**: 예시가 적절한지 모르겠지만, state나 props 변경이 잦아 자주 리렌더링되는 A, 복잡하지만 잦은 리렌더링이 일어나지 않는 B가 같은 부모를 가지고 있을 때 > A는 메모이제이션 하는 비용이나 리렌더링 하는 비용이나 별 차이가 없을 수 있다. B의 경우 DOM mutation을 매번 새로 계산하면 비효율적이고 사용자가 보기에 느리다고 느낄 수 있다.
+
+- useMemo는 굉장히 복잡한데 state, props 등에 의해 바뀔 일이 거의 없고 자주 호출되는 컴포넌트를 재사용할 때 쓴다.
+- 다만 useMemo가 적용되는 레퍼런스는 가비지 컬렉션에서 제외되어 잘못하면 메모리를 더 많이 차지할 수 있다고 한다. 그래서 정말 필요할 때만 쓸 것..
+
+**useCallback:** 같은 경우는 위 코드에 있는 clickCallback과 같이 바뀔일이 별로 없는 함수를 재사용하기 위해 쓴다. 혹은 (b)의 그림과 배열 안에 데이터를 적절히 배치해서 그리는 코드가 반복된다고 할 때, useCallback으로 render함수를 감싸고 이를 재사용하는 형태로 쓴다.
+
+###
+
+### 정리
+
+- useLayoutEffect는 useEffect를 사용했을 때 문제가 생길만 하면 사용하자.
+- useCallback과 useMemo는 쓰는게 좋을지 안좋을지 생각하고 잘 선택해서 사용하자. 🥲
+
+###
+
+### reference
+
+- [Hooks API Reference — React](https://reactjs.org/docs/hooks-reference.html#uselayouteffect)
+- [React useLayoutEffect vs. useEffect with examples — LogRocket Blog](https://blog.logrocket.com/useeffect-vs-uselayouteffect-examples/)
+- [[React] useEffect 와 useLayoutEffect 의 차이는 무엇일까?](https://medium.com/@jnso5072/react-useeffect-%EC%99%80-uselayouteffect-%EC%9D%98-%EC%B0%A8%EC%9D%B4%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%BC%EA%B9%8C-e1a13adf1cd5)
+- [What is useLayoutEffect hook and when do you use it](https://dev.to/nibble/what-is-uselayouteffect-hook-and-when-do-you-use-it-3lan)
+- [React Hooks: useMemo 사용법](https://www.daleseo.com/react-hooks-use-memo/)
+- [An In-Depth Look at the Difference Between useMemo and useCallback](https://procoders.tech/blog/difference-between-usememo-and-usecallback/)
+- [useCallback vs useMemo](https://medium.com/@jan.hesters/usecallback-vs-usememo-c23ad1dc60)
+- [React.memo() 현명하게 사용하기](https://ui.toast.com/weekly-pick/ko_20190731)
+- [What’s the difference between useCallback and useMemo in practice?](https://stackoverflow.com/questions/54963248/whats-the-difference-between-usecallback-and-usememo-in-practice)

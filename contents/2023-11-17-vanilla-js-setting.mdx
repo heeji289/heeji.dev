@@ -1,0 +1,434 @@
+---
+title: 'Vanilla JS 개발환경 세팅하는 법'
+summary: 바닐라 자바스크립트 프로젝트를 시작하기 전에 개발환경을 세팅해보자.
+date: 2023-11-17
+image: https://images.unsplash.com/photo-1492112007959-c35ae067c37b
+tags:
+  - javascript
+  - project
+pinned: true
+---
+
+```bash
+목적
+> 개발 내용을 바로 확인할 수 있는 환경
+> 소스 관리가 쉬운 환경
+> 일관된 코드 스타일을 유지할 수 있는 환경
+> (extra) 타입스크립트를 사용할 수 있는 환경
+```
+
+폴더를 생성하고 프로젝트를 만들어주자.
+
+```bash
+npm init -y
+```
+
+## 1. eslint, prettier 설정
+
+`eslint`와 `prettier` 세팅을 먼저 해보자
+
+- `eslint`는 **일관된 코드 스타일**을 가져가기 위해 사용한다.
+- `prettier`는 eslint와 다르게 indent, tabSize 등을 통일시켜 **코드를 보기 좋게** 만드는데 도움이 된다.
+
+### eslint
+
+먼저 eslint 관련 의존성을 설치해보자
+
+```bash
+npm i -D eslint eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard
+```
+
+설치를 했다면 우리 프로젝트에서 eslint를 적용할 수 있도록 설정 파일을 추가해줘야 한다.
+
+`.eslintrc` 파일을 루트에 추가해준다.
+
+```bash
+// .eslintrc
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["import", "node", "promise", "standard"],
+  "rules": {
+    "no-console": "warn"
+  }
+}
+```
+
+- **env**: 코드의 환경. 어떤 환경에서 코드가 실행되는지를 나타낸다.
+- **extends**: 베이스가 되는 eslint 룰이다.
+- **parserOptions**: 읽어올 코드에 대한 정보.
+- **plugins**: 기본 규칙 외 부가적인 규칙 (앞에서 설치한 plugin들을 여기에 적어준다.)
+- **rules**: 유저가 따로 정의하는 규칙
+
+여기까지 잘 설정되었는지 확인하려면 `index.js` 파일을 만들고 콘솔로그를 추가하면
+
+아래와 같이 경고가 뜨는 것을 확인할 수 있다.
+
+![image](https://blog.kakaocdn.net/dn/bnjRLc/btsGiY8KXNY/4mGtqBOOvJXcOtShpstsBk/img.png)
+
+### prettier
+
+`prettier`를 사용하기 위한 의존성을 추가해보자.
+
+```bash
+npm i -D prettier eslint-config-prettier eslint-plugin-prettier
+```
+
+마찬가지로 설정 파일이 필요하다. 루트에 `.prettierrc` 파일을 추가해주자
+
+```bash
+// .prettierrc
+{
+  "useTabs": false,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "endOfLine": "lf",
+  "semi": false,
+  "arrowParens": "always"
+}
+```
+
+이렇게 하면 `index.js`에서 `console.log("heeji")`로 입력한 후 저장하면 `console.log('heeji')`으로 자동으로 변환된다. (vscode 기준 eslint, prettier 확장을 설치하고 format on save 설정이 완료된 상태일 때)
+
+이렇게 해서 기본적인 코드 스타일에 관련된 설정을 마쳤다.
+
+## 2. babel, webpack 설정
+
+### babel
+
+다음은 `babel`과 `webpack`을 추가해보자.
+
+**babel은 자바스크립트 컴파일러이다.**
+
+![image](https://blog.kakaocdn.net/dn/cfQ5dm/btsGh58poXJ/xS54UiCKgQUSog9KlP7EfK/img.png)
+
+공식문서를 보면 `babel`의 역할은 다음과 같다.
+
+- **문법을 변환시켜준다.** 최신 문법을 최신 브라우저 뿐 아니라 이전 버전의 브라우저나 환경에서도 호환 가능하도록 해준다.
+- **타겟 환경에서 없는 기능을 폴리필.** 최신 브라우저에서만 지원하는 코드를 이전 브라우저에서도 쓸 수 있게 채워줌을 뜻한다.
+
+사용자가 사용하는 브라우저와 버전은 천차만별이니 정신건강을 위해 babel을 사용해 우리가
+
+신경 쓸 포인트를 적게 만들어주도록 하자..
+
+babel에 필요한 의존성을 추가해준다.
+
+```bash
+npm i -D @babel/core @babel/preset-env
+```
+
+- **@babel/core**: babel 동작에 필요한 핵심 패키지
+- **@babel/preset-env**: 코드를 변환하는 규칙을 담고 있는 상자라고 생각하면 된다. 여기에서는 타겟 환경에 대한 변환 규칙과 폴리필들이 선언되어있다. [공식문서 참고](https://babeljs.io/docs/babel-preset-env)
+
+마찬가지로 설정이 필요하다. `.babelrc`파일을 루트에 추가해준다.
+
+```bash
+// .babelrc
+{
+  "presets": ["@babel/preset-env"]
+}
+```
+
+### webpack
+
+`webpack`은 모던 자바스크립트 앱을 위한 `정적 모듈 번들러`이다. 파일들의 의존성을 분석해서 하나 이상의 번들(자바스크립트 코드 모음 파일)을 생성한다.
+
+여기저기서 babel과 webpack이 형제처럼 묶여서 소개되는 것을 봤을 것이다. 앞에서 알아봤듯이 babel은 "코드"를 다루는 것이고 webpack은 "파일"을 다루는 것이다.
+
+> webpack으로 여러 파일을 번들로 모으는 작업을 하고 babel로 번들의 코드를 변환한다.
+
+webpack 사용에 필요한 의존성을 설치한다.
+
+```bash
+npm i -D babel-loader webpack-dev-server webpack-cli
+```
+
+- **babel-loader**: 코드를 읽고 변환하는 역할을 babel이 담당할 수 있도록 webpack의 loader에 추가할 것
+- **webpack-dev-server**: 개발 서버
+- **webpack-cli**: cli에서 webpack 명령어를 사용할 수 있도록 해준다.
+
+webpack은 버전4부터는 어떠한 설정도 필요없다. 하지만 대부분 더 복잡한 설정이 필요하다. 이를 위해 `webpack.config.js` 파일을 루트에 추가해주자. [참고자료](https://webpack.kr/guides/getting-started/#using-a-configuration)
+
+```bash
+// webpack.config.js
+const path = require("path");
+
+module.exports = {
+// 시작점을 src/index를 바라보게 한다.  entry: path.resolve(__dirname, "./src"),
+  output: {
+// 번들 결과물을 저장할 위치와 이름 설정    filename: "bundle.[hash].js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  module: {
+    rules: [
+// 어떤 파일들을 어떤 loader 를 이용하여 해석 할 것 인가
+      {
+        test: /\.(js|ts)$/,
+        exclude: /node_modules/,
+        use: "babel-loader",
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".js", ".ts"],// import 할 때 확장자 생략 가능
+  },
+};
+```
+
+- **entry**: 빌드의 시작점
+- **output**: 빌드된 결과물이 위치할 곳
+- **module**: webpack에 도움을 주는 loader들을 어떤 파일일 때 어떤 로더를 쓸 지 설정해준다.
+
+⛔️ 이렇게 했을 때 슬프게도 webpack 설정 파일에서 eslint 에러가 마구 난다.
+
+![image](https://blog.kakaocdn.net/dn/PUspd/btsGjB6ydFr/WwH82ZXyKwHfofaRaSj97K/img.png)
+
+우리는 eslint에게 module 형태의 소스를 주겠다고 했는데 cjs 형태의 소스가 들어오니 잘못되었다고 경고를 날리는 것이다.
+eslint 설정에서 overrides를 활용해 `webpack.config.js`는 다른 parserOptions를 주도록 해보자. 파일 마지막에 overrides 설정을 추가해 해당 파일은 module이 아니라고 이야기해준다.
+
+```bash
+// .eslintrc
+{
+// 앞의 설정들..
+"overrides": [
+    {
+      "files": ["webpack.config.js"],
+      "parserOptions": {
+        "sourceType": "script"
+      }
+    }
+  ]
+```
+
+이렇게 해도 여전히 경고가 나오는데 우리가 `webpack.config.js`에서 사용한 `module.exports`나 `require` 구문을 eslint가 이해할 수 있도록 설정하지 않았기 때문에 에러가 난다. env에 node를 추가해 eslint가 이해할 수 있도록 해주자.
+
+```bash
+// .eslintrc
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true// 추가
+  }
+// 생략
+}
+```
+
+이렇게 하면 더이상 webpack 설정 파일에서 에러가 나지 않는다.
+
+추가로 package.json에 script 명령어를 추가해서 webpack의 build 기능을 쉽게 쓰도록 해보자.
+
+```bash
+// package.json"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack build --mode production"
+    },
+```
+
+잘 설정했는지 확인해보자! src 디렉토리를 추가하고 index.js를 옮겨준다.
+
+```bash
+// index.jsfunction add(a, b){
+  return a + b;
+}console.log(add(3, 4));
+```
+
+간단한 소스를 추가해주고 터미널에 `npm run build`를 입력!
+
+![image](https://blog.kakaocdn.net/dn/l66zl/btsGj0dJFVr/QKVzbqzKP7dEabAanaALYk/img.png)
+
+- 무사히 dist 폴더가 생성되고 우리가 정의한 파일 이름으로 번들이 생성된 것을 확인할 수 있다.
+
+이제 우리가 생성한 js 번들을 html에 불러오도록 해보자! 루트에서 `public` 폴더를 생성하고
+
+`index.html`을 추가해준다.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+src 폴더의 index.js도 바꿔준다.
+
+```js
+const $root = document.getElementById('root');
+if ($root != null) {
+  $root.innerText = 'HELLO WORLD!';
+}
+```
+
+`npm run build`를 수행하고 index.html에 script 태그를 추가해준다. src에 생성된 js 경로를 입력해준다.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  %% 중략 %%
+  <body>
+    <div id="root"></div>
+    %% 아래 추가 %%
+    <script src="../dist/bundle.24237c10282007af8d94.js"></script>
+  </body>
+</html>
+```
+
+이제 index.html을 열면!
+
+![image](https://blog.kakaocdn.net/dn/44NoS/btsGh3ivjC5/ZxwKqsl7XcKuh8inOCj8u1/img.png)
+
+무사히 자바스크립트가 실행된 것을 확인할 수 있다. 그런데 문제는 자바스크립트 코드를 수정할 때마다 `npm run build`를 수행하고 index.html에서 script의 src를 변경해줘야하는 번거로움이 있다.
+
+### html plugin 추가
+
+다행히도 이런 귀찮음을 없애줄 수 있는 webpack 플러그인이 있다.
+
+```bash
+npm i -D html-webpack-plugin
+```
+
+`webpack.config.js`를 수정해보자. 해당 플러그인을 사용하라고 알려준다.
+
+```js
+// webpack.config.js
+
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");// 추가module.exports = {
+// 중략..plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "./public/index.html"),
+      filename: "index.html",
+    }),
+  ],
+};
+```
+
+이렇게 하고 npm run build를 하면
+
+![image](https://blog.kakaocdn.net/dn/budxpY/btsGifiOYKa/HVlDmI6ck8j6JcCr7czvkK/img.png)
+
+이렇게 html 파일도 변환된다.
+
+그리고 알아서 최신 자바스크립트 번들을 불러와준다!!
+
+![image](https://blog.kakaocdn.net/dn/cQfUDa/btsGiQ34xrE/XF9HpOAfmXQvMoCNdwojZK/img.png)
+
+여기까지 빌드 준비가 완료되었다! 이제 개발환경을 구축해보자!
+
+### dev server 세팅
+
+```bash
+npm i -D webpack-dev-server
+```
+
+다음과 같이 devServer 설정을 추가해준다.
+
+```js
+// webpack.config.js
+
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+// 중략..devServer: {
+    hot: true,
+    open: true,
+  },
+};
+```
+
+package.json에 script를 추가해준다.
+
+```json
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack serve --mode development",// 추가"build": "webpack build --mode production"
+  },
+```
+
+이제 `npm run dev`를 치면! 실행 url이 터미널에 나오고 자바스크립트 파일을 수정하면 바로바로 반영되는 것을 볼 수 있다!
+
+**여기까지 Vanilla Javascript 프로젝트 세팅을 마쳤다. 이제 무사히 개발 내용을 바로 확인할 수 있으며 배포할 준비도 되었다. 🎉**
+
+## (번외) 타입스크립트를 추가해보자.
+
+```bash
+npm i -D typescript @typescript-eslint/eslint-plugin  @typescript-eslint/parser
+```
+
+루트에 `tsconfig.json` 파일을 추가
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+```
+
+babel 설정
+
+```bash
+npm i -D @babel/preset-typescript
+```
+
+설정에 추가
+
+```json
+// .babelrc
+{
+  "presets": ["@babel/preset-env", "@babel/preset-typescript"]
+}
+```
+
+이렇게 해주고 index.js를 index.ts로 바꿔준 후 파일 내용도 바꿔보자.
+
+```ts
+const $root = document.getElementById('root');
+if ($root != null) {
+  $root.innerText = 'HELLO WORLD!';
+}
+
+function add(a: number, b: number) {
+  return a + b;
+}
+
+console.log(add(2, 2));
+```
+
+`npm run build`를 실행하면
+
+![image](https://blog.kakaocdn.net/dn/bnASPb/btsGipr7kfU/zoJy562ZpeBcsynsoRI270/img.png)
+
+타입스크립트 파일이 무사히 변환된 것을 확인할 수 있다.
