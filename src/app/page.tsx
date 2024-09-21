@@ -4,7 +4,7 @@ import { FiGithub } from 'react-icons/fi';
 import { PiLinkedinLogoBold } from 'react-icons/pi';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
-import { allPosts as posts } from 'content-collections';
+import { postsSortedByDate as posts } from '@/lib/posts';
 
 const GITHUB_LINK = 'https://github.com/heeji289';
 const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';

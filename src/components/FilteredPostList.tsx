@@ -5,7 +5,8 @@ import React, { useState } from 'react';
 import PostCard from './PostCard';
 import Chip from './ui/Chip';
 import { Separator } from './ui/separator';
-import { allPosts, Post } from 'content-collections';
+import { Post } from 'content-collections';
+import { postsSortedByDate as posts } from '@/lib/posts';
 
 type PostGroupByYear = {
   [key in string]: Post[];
@@ -48,13 +49,13 @@ export default function FilteredPostList() {
   const [selectedTag, setSelectedTag] = useState('');
 
   const tags = convertToUniqArray(
-    allPosts?.flatMap((post) => post.tags).filter((tag) => tag != null) ?? []
+    posts?.flatMap((post) => post.tags).filter((tag) => tag != null) ?? []
   );
 
   const filteredPosts =
     selectedTag !== ''
-      ? allPosts.filter((post) => post.tags?.includes(selectedTag))
-      : allPosts;
+      ? posts.filter((post) => post.tags?.includes(selectedTag))
+      : posts;
 
   const postsGroupbyYear = groupPostsByYear(filteredPosts);
   const sortedYears = sortByYear(postsGroupbyYear);

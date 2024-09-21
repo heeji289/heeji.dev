@@ -1,9 +1,9 @@
 import Giscus from '@/components/Giscus';
 import Markdown from '@/components/Markdown';
 import TableOfContents from '@/components/TableOfContents';
-import { allPosts } from 'content-collections';
 import { Metadata } from 'next';
 import React from 'react';
+import { postsSortedByDate as posts } from '@/lib/posts';
 
 type Param = {
   slug: string;
@@ -14,7 +14,7 @@ export async function generateMetadata({
 }: {
   params: Param;
 }): Promise<Metadata> {
-  const result = allPosts.find((post) => post._meta.path === params.slug);
+  const result = posts.find((post) => post._meta.path === params.slug);
 
   return {
     title: result?.title ?? '',
@@ -37,14 +37,14 @@ export async function generateMetadata({
 }
 export async function generateStaticParams() {
   return (
-    allPosts?.map((post) => ({
+    posts?.map((post) => ({
       slug: post._meta.path ?? '',
     })) ?? []
   );
 }
 
 export default async function PostDetailPage({ params }: { params: Param }) {
-  const post = allPosts.find((post) => post._meta.path === params.slug);
+  const post = posts.find((post) => post._meta.path === params.slug);
 
   if (!post) {
     return <div>Post not found</div>;
