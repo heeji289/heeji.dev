@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import { allPosts } from 'content-collections';
 import { ImageResponse } from 'next/og';
+import { postsSortedByDate as posts } from '@/lib/posts';
 
 type Params = {
   slug: string;
@@ -27,7 +27,7 @@ export default async function Image({ params }: Props) {
   const slug = params.slug;
 
   // TODO: 필터 함수 공통으로 만들기
-  const result = allPosts.find((post) => post._meta.path === params.slug);
+  const result = posts.find((post) => post._meta.path === params.slug);
 
   if (!result) {
     return new Response(
