@@ -1,5 +1,5 @@
-import { getPostList } from '@/lib/notion2';
 import { MetadataRoute } from 'next';
+import { allPosts as posts } from 'content-collections';
 
 const baseURL = 'https://heeji.dev';
 
@@ -26,11 +26,9 @@ const aboutPageEntry: SitemapEntry = {
 };
 
 async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getPostList();
-
   const postEntries =
     posts?.map((post) => ({
-      url: createUrl(`/posts/${post.slug}`),
+      url: createUrl(`/posts/${post._meta.path}`),
       lastModified: new Date(),
     })) ?? [];
 
