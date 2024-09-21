@@ -1,6 +1,6 @@
 import Giscus from '@/components/Giscus';
 import Markdown from '@/components/Markdown';
-import TableOfContents from '@/components/TableOfContents';
+// import TableOfContents from '@/components/TableOfContents';
 import { Metadata } from 'next';
 import React from 'react';
 import { postsSortedByDate as posts } from '@/lib/posts';

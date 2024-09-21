@@ -49,7 +49,7 @@ export default function Search() {
         {isLoading ? (
           <span>로딩중..</span> // TODO: loading UI
         ) : (
-          result.map((post) => <PostCard key={post.id} post={post} />)
+          result.map((post) => <PostCard key={post._meta.path} post={post} />)
         )}
       </DialogContent>
     </Dialog>
