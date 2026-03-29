@@ -36,7 +36,7 @@ export default function Giscus() {
     scriptElem.async = true;
     scriptElem.crossOrigin = 'anonymous';
 
-    scriptElem.setAttribute('data-repo', 'heeji289/nextjs-blog');
+    scriptElem.setAttribute('data-repo', 'heeji289/heeji.dev');
     scriptElem.setAttribute('data-repo-id', 'R_kgDOMEPXTw');
     scriptElem.setAttribute('data-category', 'General');
     scriptElem.setAttribute('data-category-id', 'DIC_kwDOMEPXT84CgXIB');
