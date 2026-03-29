@@ -7,6 +7,17 @@
   src: url('../../public/fonts/Pretendard-Medium.ttf');
 }
 
+@layer components {
+  .prose :not(pre) > code {
+    @apply rounded-md bg-gray-100 px-1.5 py-0.5 text-sm font-normal dark:bg-gray-800;
+  }
+
+  .prose :not(pre) > code::before,
+  .prose :not(pre) > code::after {
+    content: none;
+  }
+}
+
 @layer base {
   html {
     @apply scroll-smooth;

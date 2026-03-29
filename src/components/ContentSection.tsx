@@ -10,7 +10,7 @@ const ContentSection = ({ children }: Props) => (
     className={clsx(
       'prose prose-base dark:prose-invert !max-w-none',
       'hover:prose-a:decoration-primary-500 hover:prose-a:decoration-2',
-      'prose-h1:font-bold'
+      'prose-h1:font-bold',
     )}
   >
     {children}
