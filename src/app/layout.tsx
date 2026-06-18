@@ -3,10 +3,8 @@ import './globals.css';
 import 'prismjs/themes/prism-tomorrow.css';
 import { IBM_Plex_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
-import Header2 from '@/components/Header2';
-import { Separator } from '@/components/ui/separator';
-import Footer from '@/components/Footer';
 import Script from 'next/script';
+import Nav from '@/components/Nav';
 
 export const metadata: Metadata = {
   title: 'heeji.dev',
@@ -67,15 +65,11 @@ export default function RootLayout({
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
           `}
         </Script>
-        <section className='mx-auto max-w-3xl xl:mx-w-[50rem] xl:px-8'>
-          <div className='box-border flex h-full flex-col justify-between'>
-            <Header2 />
-            <Separator className='dark:bg-primary' />
-            <main className='pb-6 px-4 border-zinc-100 border-2'>
-              {children}
-            </main>
-            <Footer />
+        <section className='mx-auto w-full max-w-2xl px-6 py-16 font-pretendard'>
+          <div className='mb-12 border-b border-base-200 pb-5 dark:border-base-700'>
+            <Nav />
           </div>
+          {children}
         </section>
       </body>
     </html>

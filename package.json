@@ -9,28 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-icons": "^1.3.0",
-    "@radix-ui/react-menubar": "^1.1.1",
-    "@radix-ui/react-separator": "^1.1.0",
-    "@radix-ui/react-slot": "^1.1.0",
-    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "codehike": "^1.0.1",
-    "lucide-react": "^0.396.0",
     "next": "14.2.3",
     "next-contentlayer": "^0.3.4",
     "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^5.2.1",
-    "react-is": "^18.3.1",
     "rehype": "^13.0.1",
     "rehype-pretty-code": "^0.14.0",
     "remark-gfm": "^4.0.0",
     "rss": "^1.2.2",
     "shiki": "^1.18.0",
-    "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
@@ -47,5 +37,6 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

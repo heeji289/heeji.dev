@@ -1,6 +1,5 @@
-import clsx from 'clsx';
 import { ImageResponse } from 'next/og';
-import { postsSortedByDate as posts } from '@/lib/posts';
+import { posts } from '@/lib/posts';
 
 type Params = {
   slug: string;
