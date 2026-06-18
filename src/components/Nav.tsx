@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/Logo';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const navItems = [
   { href: '/posts', label: 'posts' },
@@ -26,22 +27,26 @@ export default function Nav() {
         <Logo className='h-7 w-7 transition-transform hover:-translate-y-px' />
       </Link>
 
-      <ul className='flex flex-wrap items-center gap-5 text-base-500 dark:text-base-400'>
-        {navItems.map((item) => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className={`inline-block py-1 font-mono lowercase tracking-tight transition-colors ${
-                isActive(item.href)
-                  ? 'text-info-600 dark:text-info-400'
-                  : 'text-base-500 dark:text-base-400'
-              } hover:text-info-600 dark:hover:text-info-400`}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className='flex items-center gap-5'>
+        <ul className='flex flex-wrap items-center gap-5 text-base-500 dark:text-base-400'>
+          {navItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={`inline-block py-1 font-mono lowercase tracking-tight transition-colors ${
+                  isActive(item.href)
+                    ? 'text-info-600 dark:text-info-400'
+                    : 'text-base-500 dark:text-base-400'
+                } hover:text-info-600 dark:hover:text-info-400`}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <ThemeToggle />
+      </div>
     </nav>
   );
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Markdown from '@/components/Markdown';
+import Giscus from '@/components/Giscus';
 import {
   POST_TYPE_LABEL,
   getPostBySlug,
@@ -81,6 +82,10 @@ export default function PostDetailPage({ params }: { params: Param }) {
       </header>
 
       <Markdown code={post.mdx} />
+
+      <section className='border-t border-base-200 pt-8 dark:border-base-700'>
+        <Giscus />
+      </section>
     </article>
   );
 }
