@@ -1,70 +1,51 @@
-import PostCard from '@/components/PostCard';
-import { Button } from '@/components/ui/button';
-import { FiGithub } from 'react-icons/fi';
-import { PiLinkedinLogoBold } from 'react-icons/pi';
-import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
-import { postsSortedByDate as posts } from '@/lib/posts';
+import PostList from '@/components/PostList';
+import { getPinnedPosts, getRecentPosts } from '@/lib/posts';
 
-const GITHUB_LINK = 'https://github.com/heeji289';
-const LINKEDIN_LINK = 'https://www.linkedin.com/in/heeji289';
-
-export default async function Home() {
-  if (!posts) {
-    return;
-  }
-
-  const pinnedPosts = posts.filter((post) => post.pinned);
+export default function HomePage() {
+  const pinnedPosts = getPinnedPosts();
+  const recentPosts = getRecentPosts();
 
   return (
-    <main className='flex flex-col'>
-      <section className='pt-8 pb-6'>
-        <p className='py-1'>
-          개인 기록과 기술 공부를 위한 저만의 블로그입니다. 사용자 경험을 위해
-          빠르게 발전하는 프론트엔드 생태계를 좋아해요.
+    <div className='space-y-14'>
+      <section className='space-y-5'>
+        <p className='flex items-center gap-2 font-mono text-sm text-base-500 dark:text-base-400'>
+          <span className='font-semibold text-info-500 dark:text-info-400'>
+            {'>_'}
+          </span>
+          <span>heeji.dev</span>
+          <span className='inline-block h-4 w-[2px] animate-caret-blink bg-info-500 dark:bg-info-400' />
         </p>
-        <div className='flex space-x-2'>
-          <div>Social Links:</div>
-          <div className='flex gap-2'>
-            <Link href={GITHUB_LINK} rel='noopener noreferrer' target='_blank'>
-              <FiGithub size={26} />
-            </Link>
-
-            <Link
-              href={LINKEDIN_LINK}
-              rel='noopener noreferrer'
-              target='_blank'
-            >
-              <PiLinkedinLogoBold size={26} />
-            </Link>
-          </div>
-        </div>
+        <h2 className='text-[30px] font-semibold leading-tight text-base-900 dark:text-base-50'>
+          안녕하세요.
+          <br />
+          프론트엔드 개발자 임희지입니다.
+        </h2>
+        <p className='max-w-2xl text-sm leading-relaxed text-base-600 dark:text-base-300'>
+          실제로 구현하면서 맞닥뜨린 문제와 해결 과정을 중심으로 기록합니다.
+          학습 노트, 컨퍼런스 후기, 회고도 함께 남깁니다.
+        </p>
       </section>
 
-      <div className='flex flex-col pt-12 pb-6'>
-        <span className='text-2xl font-semibold pb-4 text-primary'>
-          Featured
-        </span>
-        {pinnedPosts.map((post) => (
-          <PostCard key={post._meta.path} post={post} />
-        ))}
-      </div>
+      {pinnedPosts.length > 0 && (
+        <section className='space-y-3'>
+          <h3 className='text-base font-medium'>pinned posts</h3>
+          <PostList posts={pinnedPosts} showType={false} />
+        </section>
+      )}
 
-      <div className='flex flex-col pt-12 pb-6'>
-        <span className='text-2xl font-semibold pb-4 text-primary'>
-          Recent Posts
-        </span>
-        {posts.slice(0, 5).map((post) => (
-          <PostCard key={post._meta.path} post={post} />
-        ))}
-      </div>
-
-      <Link href={'/posts'}>
-        <Button variant={'ghost'} className='flex items-center space-x-2'>
-          <span className='text-lg '>All Posts</span>
-          <FaArrowRight />
-        </Button>
-      </Link>
-    </main>
+      <section className='space-y-3'>
+        <div className='flex items-center justify-between'>
+          <h3 className='text-base font-medium'>recent posts</h3>
+          <Link
+            href='/posts'
+            className='font-mono text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
+          >
+            all posts →
+          </Link>
+        </div>
+        <PostList posts={recentPosts} showType={false} />
+      </section>
+    </div>
   );
 }

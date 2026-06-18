@@ -20,9 +20,19 @@ const config = {
         error: colors.red,
         success: colors.green,
       },
+      keyframes: {
+        'caret-blink': {
+          '0%, 49%': { opacity: '1' },
+          '50%, 100%': { opacity: '0' },
+        },
+      },
+      animation: {
+        'caret-blink': 'caret-blink 1.1s steps(1) infinite',
+      },
     },
     fontFamily: {
       pretendard: ['Pretendard'],
+      mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],

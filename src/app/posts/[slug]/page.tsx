@@ -1,9 +1,13 @@
-import Giscus from '@/components/Giscus';
-import Markdown from '@/components/Markdown';
-// import TableOfContents from '@/components/TableOfContents';
+import Link from 'next/link';
 import { Metadata } from 'next';
-import React from 'react';
-import { postsSortedByDate as posts } from '@/lib/posts';
+import { notFound } from 'next/navigation';
+import Markdown from '@/components/Markdown';
+import {
+  POST_TYPE_LABEL,
+  getPostBySlug,
+  inferPostType,
+  posts,
+} from '@/lib/posts';
 
 type Param = {
   slug: string;
@@ -14,97 +18,69 @@ export async function generateMetadata({
 }: {
   params: Param;
 }): Promise<Metadata> {
-  const result = posts.find((post) => post._meta.path === params.slug);
+  const post = getPostBySlug(params.slug);
 
   return {
-    title: result?.title ?? '',
-    authors: [{ name: ' 임희지', url: 'https://heeji.dev' }],
-    keywords: result?.tags ?? [],
+    title: post?.title ?? '',
+    authors: [{ name: '임희지', url: 'https://heeji.dev' }],
+    keywords: post?.tags ?? [],
     openGraph: {
-      title: result?.title ?? '',
+      title: post?.title ?? '',
       siteName: 'heeji.dev',
       locale: 'ko_KR',
       type: 'article',
       authors: '임희지',
-      tags: result?.tags ?? [],
+      tags: post?.tags ?? [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: result?.title ?? '',
+      title: post?.title ?? '',
       creator: '@huge_0314',
     },
   };
 }
+
 export async function generateStaticParams() {
-  return (
-    posts?.map((post) => ({
-      slug: post._meta.path ?? '',
-    })) ?? []
-  );
+  return posts.map((post) => ({ slug: post._meta.path }));
 }
 
-export default async function PostDetailPage({ params }: { params: Param }) {
-  const post = posts.find((post) => post._meta.path === params.slug);
+export default function PostDetailPage({ params }: { params: Param }) {
+  const post = getPostBySlug(params.slug);
 
   if (!post) {
-    return <div>Post not found</div>;
+    notFound();
   }
 
-  // const toc = getPageTableOfContents(pageBlock, result.recordMap);
-
   return (
-    <div className='container mx-auto px-0 relative'>
-      <div className='py-8'>
-        <h1 className='font-bold text-4xl'>{post.title}</h1>
-        <div>
-          <span className='text-lg text-stone-500'>{post.date}</span>
+    <article className='space-y-8'>
+      <header className='space-y-4 border-b border-base-200 pb-6 dark:border-base-700'>
+        <Link
+          href='/posts'
+          className='inline-flex items-center gap-1 font-mono text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
+        >
+          ← posts
+        </Link>
+
+        <h2 className='text-3xl font-semibold leading-tight'>{post.title}</h2>
+
+        <div className='text-sm text-base-500 dark:text-base-300'>
+          {post.date} · {POST_TYPE_LABEL[inferPostType(post)]}
         </div>
-      </div>
 
-      <div className='lg:max-w-3xl'>
-        <Markdown code={post.mdx} />
-        <Giscus />
-      </div>
-      {/* TODO: TOC */}
-      {/*
-      <div className='mb-8 lg:fixed lg:left-[calc(50%-38rem)] lg:z-10 lg:w-[18rem] lg:top-[5rem] lg:bottom-0 lg:overflow-y-auto'>
-        <nav className='lg:py-10'>
-          <TableOfContents toc={toc} />
-        </nav>
-      </div>
+        <div className='flex flex-wrap gap-3'>
+          {post.tags.map((tag) => (
+            <Link
+              key={`${post._meta.path}-${tag}`}
+              href={`/tags/${encodeURIComponent(tag)}`}
+              className='text-xs text-base-500 underline-offset-4 hover:underline dark:text-base-400'
+            >
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      </header>
 
-     */}
-    </div>
+      <Markdown code={post.mdx} />
+    </article>
   );
 }
-
-// const CustomHeadingRenderer = <T extends BlockValueType['type']>(
-//   props: CustomBlockComponentProps<T>
-// ) => {
-//   const { blockValue } = props;
-//   const id = blockValue.id;
-//   const text = blockValue.properties?.title?.[0]?.[0] || '';
-
-//   switch (blockValue.type) {
-//     case 'header':
-//       return (
-//         <h1 id={id} className='notion-h1'>
-//           {text}
-//         </h1>
-//       );
-//     case 'sub_header':
-//       return (
-//         <h2 id={id} className='notion-h2'>
-//           {text}
-//         </h2>
-//       );
-//     case 'sub_sub_header':
-//       return (
-//         <h3 id={id} className='notion-h3'>
-//           {text}
-//         </h3>
-//       );
-//     default:
-//       return null;
-//   }
-// };
