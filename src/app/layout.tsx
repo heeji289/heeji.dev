@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import 'prismjs/themes/prism-tomorrow.css';
 import { IBM_Plex_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import Script from 'next/script';

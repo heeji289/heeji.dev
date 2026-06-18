@@ -20,8 +20,7 @@ const posts = defineCollection({
         [
           rehypePrettyCode,
           {
-            // TODO: 테마에 맞게 수정
-            theme: 'slack-dark',
+            theme: { light: 'github-light', dark: 'github-dark' },
             keepBackground: true,
           },
         ],

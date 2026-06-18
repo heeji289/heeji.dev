@@ -44,3 +44,23 @@
     @apply rounded-md outline-none ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-base-800;
   } */
 }
+
+/* 코드블록 라이트/다크 듀얼 테마 (rehype-pretty-code + shiki)
+   defaultColor:false라 light/dark 둘 다 명시해야 색이 적용된다. */
+.prose pre[data-theme],
+.prose pre[data-theme] span {
+  color: var(--shiki-light);
+}
+
+.prose pre[data-theme] {
+  background-color: var(--shiki-light-bg);
+}
+
+.dark .prose pre[data-theme],
+.dark .prose pre[data-theme] span {
+  color: var(--shiki-dark);
+}
+
+.dark .prose pre[data-theme] {
+  background-color: var(--shiki-dark-bg);
+}

@@ -13,7 +13,6 @@
     "codehike": "^1.0.1",
     "next": "14.2.3",
     "next-contentlayer": "^0.3.4",
-    "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
     "rehype": "^13.0.1",
