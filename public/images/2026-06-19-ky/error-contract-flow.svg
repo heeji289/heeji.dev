@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="560" viewBox="0 0 760 560" font-family="'Apple SD Gothic Neo','Pretendard','Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- card background -->
+  <rect x="1" y="1" width="758" height="558" rx="16" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+
+  <!-- title -->
+  <text x="380" y="42" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">에러를 한 곳에서 단일 응답으로 통일하는 흐름</text>
+
+  <!-- arrows (behind boxes) -->
+  <line x1="380" y1="156" x2="380" y2="196" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="380" y1="268" x2="380" y2="308" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="380" y1="380" x2="380" y2="420" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- box 1: handler throw -->
+  <rect x="120" y="84" width="520" height="72" rx="12" fill="#eef2ff" stroke="#c7d2fe" stroke-width="2"/>
+  <text x="380" y="116" text-anchor="middle" font-size="17" font-weight="700" fill="#3730a3">핸들러에서 예외 throw</text>
+  <text x="380" y="138" text-anchor="middle" font-size="13" fill="#6366f1">NotFound · ValidationPipe · 객체 인자 예외</text>
+
+  <!-- box 2: exception layer -->
+  <rect x="120" y="204" width="520" height="64" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="380" y="241" text-anchor="middle" font-size="16" font-weight="600" fill="#334155">NestJS 내장 exception layer</text>
+
+  <!-- box 3: global filter (key step) -->
+  <rect x="120" y="316" width="520" height="64" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="2.5"/>
+  <text x="380" y="353" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">전역 HttpExceptionFilter (@Catch)</text>
+
+  <!-- box 4: single response -->
+  <rect x="120" y="424" width="520" height="84" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+  <text x="380" y="456" text-anchor="middle" font-size="16" font-weight="700" fill="#9a3412">단일 응답 — 모든 에러가 한 모양으로</text>
+  <text x="380" y="484" text-anchor="middle" font-size="13.5" font-family="'SF Mono','Menlo','Consolas',monospace" fill="#b45309">{ statusCode, errorCode?, message, details? }</text>
+</svg>
