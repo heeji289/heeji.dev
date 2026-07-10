@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">useSelect split into three UIs</title>
+  <desc id="desc">useSelect owns selection logic and three demo components render different UI surfaces.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .title { font-size: 20px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .box { fill: #f8fafc; stroke: #334155; stroke-width: 2; }
+      .core { fill: #eef2ff; stroke: #4f46e5; stroke-width: 2; }
+      .line { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="920" height="360" rx="20" fill="#ffffff"/>
+  <rect x="330" y="36" width="260" height="96" rx="18" class="core"/>
+  <text x="460" y="78" text-anchor="middle" class="title">useSelect</text>
+  <text x="460" y="106" text-anchor="middle" class="small">선택 로직, 상태, prop getter</text>
+
+  <rect x="70" y="226" width="220" height="86" rx="16" class="box"/>
+  <text x="180" y="262" text-anchor="middle" class="title">SizeSelectDemo</text>
+  <text x="180" y="288" text-anchor="middle" class="small">사이즈 옵션 UI</text>
+
+  <rect x="350" y="226" width="220" height="86" rx="16" class="box"/>
+  <text x="460" y="262" text-anchor="middle" class="title">ThumbnailSelectDemo</text>
+  <text x="460" y="288" text-anchor="middle" class="small">썸네일 옵션 UI</text>
+
+  <rect x="630" y="226" width="220" height="86" rx="16" class="box"/>
+  <text x="740" y="262" text-anchor="middle" class="title">TextSelectDemo</text>
+  <text x="740" y="288" text-anchor="middle" class="small">텍스트 옵션 UI</text>
+
+  <path d="M 405 132 C 330 164, 252 190, 190 222" class="line"/>
+  <path d="M 460 134 L 460 220" class="line"/>
+  <path d="M 515 132 C 590 164, 668 190, 730 222" class="line"/>
+</svg>

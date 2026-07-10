@@ -1,0 +1,428 @@
+---
+title: Select 구현으로 배운 headless API 설계
+date: 2026-07-10
+tags:
+  - 회고
+  - 프론트엔드
+  - React
+pinned: false
+---
+
+이번에 Select와 Dialog를 직접 구현하는 과제를 받았다.
+
+단순히 두 컴포넌트의 동작만 맞추는 과제는 아니었다. 각 컴포넌트에 적절한 패턴을 선택하고, 그 패턴을 바탕으로 API를 설계해야 했다.
+
+Dialog는 열림 상태와 합성 컴포넌트 구조를 중심으로 생각할 수 있었다. 더 오래 고민한 쪽은 Select였다.
+
+처음에는 Select를 단순한 옵션 선택 UI로 봤다.
+
+버튼을 누르면 목록이 열리고, 옵션을 클릭하면 값이 바뀐다. 화면에서 보이는 동작만 보면 크게 복잡해 보이지 않았다. 그래서 처음 과제 요구사항을 봤을 때도 큰 어려움은 없을 거라고 생각했다.
+
+요구사항을 읽다 보니 고려할 부분이 조금씩 늘어났다.
+
+`value`는 문자열이 아니라 옵션 객체 전체여야 했고, 같은 선택 로직으로 텍스트 옵션, 썸네일 옵션, 사이즈 옵션을 모두 렌더해야 했다. 품절 옵션은 클릭해도 선택되면 안 되고, 키보드로 이동할 때도 건너뛰어야 했다. 사용처에서는 각 옵션이 `selected`인지, `highlighted`인지, `disabled`인지도 알아야 했다.
+
+그래서 Select를 단순히 값 하나를 저장하는 UI로만 보기는 어려웠다.
+
+사용자 입력에 따라 여러 상태를 함께 관리해야 하는 컴포넌트에 가까웠다.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', alignItems: 'start' }}>
+  <img src="/images/2026-07-10-headless-select/select-size.png" alt="사이즈 옵션 Select UI" />
+  <img src="/images/2026-07-10-headless-select/select-thumbnail.png" alt="썸네일 옵션 Select UI" />
+  <img src="/images/2026-07-10-headless-select/select-text.png" alt="텍스트 옵션 Select UI" />
+</div>
+
+<p style={{ textAlign: 'center' }}>
+  <em>같은 선택 로직을 쓰지만, 사용처에 따라 사이즈 옵션, 썸네일 옵션, 텍스트 옵션처럼 전혀 다른 UI가 된다.</em>
+</p>
+
+## 요구사항에서 드러난 고민들
+
+가장 먼저 걸린 건 `value`였다.
+
+보통 Select를 떠올리면 `value="small"` 같은 문자열을 생각하기 쉽다. 하지만 이번 요구사항에서는 선택값이 옵션 객체 전체여야 했다.
+
+예를 들어 사이즈 옵션이라면 단순히 `M`이라는 문자열만 필요한 게 아니다. 가격, 재고, 배송비, 품절 여부처럼 선택 이후 화면이나 계산에 필요한 정보가 옵션 객체 안에 들어 있다.
+
+그러면 Select는 문자열 하나만 다루는 컴포넌트로 만들기 어렵다.
+
+선택된 객체는 그대로 유지하되, 비교는 안정적으로 해야 한다. 서버에서 다시 받은 데이터는 내용이 같아도 다른 객체일 수 있기 때문이다.
+
+```typescript
+oldItem === newItem // false일 수 있다
+```
+
+그래서 `selectedItem`은 객체 전체로 들고 가되, 비교는 `itemToKey` 같은 키 추출 콜백을 넘겨 key끼리 비교하기로 했다.
+
+두 번째로 걸린 건 `highlighted`였다.
+
+`selected`와 `highlighted`는 비슷해 보이지만 전혀 다른 상태다. `selected`는 사용자가 확정한 값이고, `highlighted`는 키보드나 마우스로 지금 탐색 중인 위치다.
+
+이 둘을 구분하지 않으면 ArrowDown으로 이동할 때 선택값이 바로 바뀌거나, 반대로 키보드 탐색 상태를 UI에 표현하기 어려워진다.
+
+세 번째는 `disabled`였다.
+
+품절 옵션은 클릭해도 선택되면 안 된다. 키보드로 이동할 때도 건너뛰어야 하고, Enter나 Space로 선택하려고 해도 막아야 한다.
+
+이 조건은 단순한 스타일 문제가 아니라, Select의 선택 로직 안에서 다뤄야 하는 규칙이었다.
+
+## 상태와 동작으로 다시 보기
+
+요구사항을 상태 기준으로 다시 보면 Select가 알아야 할 값은 꽤 분명했다. 메뉴가 열려 있는지 나타내는 `isOpen`, 현재 선택된 값인 `selectedItem`, 지금 탐색 중인 위치인 `highlightedIndex`, 그리고 특정 item을 선택할 수 있는지 알려주는 `disabled`가 필요했다.
+
+그리고 사용자 입력은 이 상태들을 바꾼다.
+
+닫힌 상태에서 버튼을 누르면 메뉴가 열린다. 열린 상태에서 ArrowDown을 누르면 다음 enabled item으로 highlight가 이동한다. Enter를 누르면 highlighted item이 selected item으로 확정되고 메뉴가 닫힌다. Escape를 누르면 선택값은 바꾸지 않고 메뉴만 닫힌다.
+
+이렇게 놓고 보니 Select는 UI 컴포넌트이면서 동시에 몇 가지 상태 전이 규칙을 가진 컴포넌트였다.
+
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <img
+    src="/images/2026-07-10-headless-select/select-state-flow.svg"
+    alt="Closed와 Open 상태 사이에서 Select 입력이 상태를 바꾸는 흐름"
+  />
+</div>
+
+`highlightedIndex`는 탐색 중인 위치이고, `selectedItem`은 확정된 값이다. 두 상태를 분리해야 키보드로 이동하는 동안 선택값이 먼저 바뀌지 않는다.
+
+## Headless 구조를 선택한 이유
+
+이번 과제에서는 같은 Select 로직으로 서로 다른 UI 세 가지를 렌더해야 했다.
+
+텍스트 옵션, 썸네일 옵션, 사이즈 옵션은 화면 모양이 다르다. 어떤 옵션은 이미지를 보여주고, 어떤 옵션은 가격이나 재고 상태를 보여줄 수 있다. 어떤 옵션은 버튼처럼 보이고, 어떤 옵션은 카드처럼 보일 수도 있다.
+
+하지만 선택 동작은 반복된다.
+
+열기, 닫기, 선택하기, highlight 이동하기, disabled item 건너뛰기 같은 규칙은 UI가 달라져도 같다.
+
+이 로직을 각각의 UI 컴포넌트 안에 넣으면 같은 코드가 여러 곳에 흩어진다. 반대로 하나의 Select 컴포넌트가 모든 UI를 props로 받기 시작하면 API가 금방 비대해진다.
+
+그래서 Headless 구조를 선택했다.
+
+기준은 단순했다. `useSelect`는 동작을 알고, 사용처는 표현을 안다.
+
+스크린샷에 쓴 세 UI도 이 구조를 따른다. 서로 다른 컴포넌트지만 모두 같은 `useSelect`를 호출하고, 받은 상태를 바탕으로 각자 다른 화면을 그린다.
+
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <img
+    src="/images/2026-07-10-headless-select/use-select-split.svg"
+    alt="useSelect가 SizeSelectDemo, ThumbnailSelectDemo, TextSelectDemo로 나뉘는 구조"
+  />
+</div>
+
+`useSelect`는 선택 로직만 맡고, 각 데모 컴포넌트는 같은 상태를 바탕으로 서로 다른 화면을 그린다.
+
+## `useSelect`가 알아야 할 것과 몰라도 되는 것
+
+`useSelect`가 알아야 하는 것은 생각보다 많지 않았다. item 목록과 현재 선택된 item, 메뉴가 열려 있는지, 지금 highlighted index가 어디인지, item을 구분할 key와 disabled 판단 방법 정도면 됐다. 거기에 사용자 입력이 들어왔을 때 상태를 어떻게 바꿀지만 알면 됐다.
+
+반대로 몰라도 되는 것도 분명했다. 버튼이 어떤 색인지, 옵션이 텍스트인지 썸네일인지, 가격을 어디에 표시할지, 드롭다운인지 바텀시트인지, CSS 애니메이션을 어떻게 줄지 같은 것들이다.
+
+이런 것까지 `useSelect`가 알기 시작하면 선택 로직이 UI 표현에 묶인다. 그러면 UI를 바꿀 때 hook도 같이 흔들릴 수 있다.
+
+실제 구현의 입력 타입은 이렇게 잡았다.
+
+```typescript
+type SelectKey = string | number;
+
+type SelectedItemChange<T> = {
+  selectedItem: T | null;
+};
+
+type UseSelectParams<T> = {
+  items: T[];
+  selectedItem?: T | null;
+  defaultSelectedItem?: T | null;
+  onSelectedItemChange?: (changes: SelectedItemChange<T>) => void;
+  itemToKey: (item: T) => SelectKey;
+  isItemDisabled?: (item: T, index: number) => boolean;
+};
+```
+
+여기서 중요한 건 `selectedItem`이 `T | null | undefined`처럼 보인다는 점이다.
+
+`undefined`는 prop을 넘기지 않았다는 뜻이고, `null`은 선택된 값이 없다는 뜻이다. 이 둘을 구분해야 controlled와 uncontrolled를 정확히 나눌 수 있다.
+
+## API를 정하면서 고민한 선택들
+
+처음에는 API 이름을 과제 요구사항에 맞춰 단순하게 생각했다.
+
+```txt
+options
+value
+defaultValue
+onChange
+getKey
+isDisabled
+```
+
+Downshift의 `useSelect`를 보면서 이름을 다시 보게 됐다.
+
+Downshift는 `items`, `selectedItem`, `highlightedIndex`처럼 상태의 의미를 직접 드러내는 이름을 쓴다. 특히 `selectedItem`이라는 이름은 선택값이 문자열 value가 아니라 item 객체라는 점을 잘 보여준다.
+
+그래서 최종적으로는 Downshift의 개념을 참고해 `items`, `selectedItem`, `defaultSelectedItem`, `onSelectedItemChange`, `itemToKey`, `isItemDisabled` 같은 이름을 선택했다.
+
+이름만의 문제는 아니었다.
+
+`onChange(item)`처럼 item만 넘길 수도 있었지만, `onSelectedItemChange({ selectedItem })`처럼 객체 형태로 받는 방향을 고민했다. 지금은 selected item 하나만 필요하지만, 나중에 변경 타입이나 highlighted index 같은 메타데이터가 필요할 수도 있기 때문이다.
+
+이름을 정하고 나니 다음으로는 상태 소유권을 정해야 했다.
+
+부모가 선택값을 들고 있으면 `useSelect`는 그 값을 따라가야 하고, 부모가 선택값을 넘기지 않으면 hook 내부에서 상태를 가져도 된다. 그래서 controlled와 uncontrolled를 나누는 기준이 API 안에 필요했다.
+
+실제 구현에서도 controlled 여부는 `undefined`로만 판단했다.
+
+```typescript
+const isControlled = selectedItem !== undefined;
+
+const currentSelectedItem = isControlled
+  ? selectedItem
+  : internalSelectedItem;
+```
+
+선택이 일어났을 때도 같은 기준을 쓴다.
+
+```typescript
+if (!isControlled) {
+  setInternalSelectedItem(nextSelectedItem);
+}
+
+if (!isSameSelection) {
+  onSelectedItemChange?.({ selectedItem: nextSelectedItem });
+}
+```
+
+여기서는 `Boolean(selectedItem)`을 쓰면 안 된다. `selectedItem={null}`은 "선택값이 없음"을 부모가 명시적으로 제어하는 controlled 상태일 수 있기 때문이다.
+
+## Downshift를 보며 API 경계를 다시 잡기
+
+Downshift를 보면서 Headless 구조가 단순히 "UI를 안 만드는 것"만은 아니라는 점을 알게 됐다.
+
+Downshift는 UI 대신 상태와 prop getter를 돌려준다.
+
+```typescript
+const {
+  isOpen,
+  selectedItem,
+  highlightedIndex,
+  getToggleButtonProps,
+  getMenuProps,
+  getItemProps,
+} = useSelect({ items });
+```
+
+사용처는 원하는 마크업을 만들고, 필요한 곳에 getter를 붙인다. 버튼에는 `getToggleButtonProps`, item에는 `getItemProps`를 붙이는 식이다.
+
+처음에는 사용처에서 직접 이벤트를 붙이는 방식도 가능하다고 생각했다.
+
+```tsx
+<button type="button" onClick={select.toggleMenu}>
+  ...
+</button>
+
+<li onClick={() => select.selectItem(item)}>
+  ...
+</li>
+```
+
+하지만 이렇게 하면 click, keyboard, disabled 방어 같은 동작 연결이 사용처마다 흩어진다. UI는 자유롭게 그릴 수 있지만, 동작 연결은 반복된다.
+
+그래서 prop getter를 도입했다.
+
+`getToggleButtonProps`는 버튼의 click과 keydown을 연결하고, `getItemProps`는 item의 hover와 click 선택을 연결한다. 사용처는 UI를 그리되, 핵심 동작 연결은 hook이 맡는다.
+
+여기서 한 번 더 고민한 지점이 있었다. prop getter가 내부 props를 그냥 덮어쓰면, 사용처는 자기 이벤트를 붙이기 어려워진다. 반대로 사용처 이벤트를 무시하면 Headless라고 부르기 애매하다.
+
+그래서 이벤트를 합성했다. 사용처 핸들러를 먼저 실행하고, 거기서 `preventDefault`를 호출하지 않았을 때만 내부 동작을 실행했다.
+
+```typescript
+function composeEventHandlers<TEvent extends { defaultPrevented: boolean }>(
+  consumerHandler: ((event: TEvent) => void) | undefined,
+  innerHandler: ((event: TEvent) => void) | undefined,
+) {
+  return (event: TEvent) => {
+    consumerHandler?.(event);
+
+    if (!event.defaultPrevented) {
+      innerHandler?.(event);
+    }
+  };
+}
+```
+
+`getToggleButtonProps`는 이 함수를 통해 사용처의 `onClick`과 내부 `toggleMenu`를 같이 연결한다.
+
+```typescript
+onClick: composeEventHandlers(onClick, toggleMenu),
+onKeyDown: composeEventHandlers(onKeyDown, handleKeyDown),
+```
+
+ref도 비슷했다. 데모에서는 Floating UI가 버튼과 메뉴의 ref를 필요로 하고, `useSelect`도 바깥 클릭을 판단하려면 같은 DOM을 알아야 했다. 그래서 사용처 ref와 내부 ref를 합성했다.
+
+이런 부분을 구현하면서 prop getter가 단순히 "이벤트를 붙여주는 함수"가 아니라, 사용처와 hook 사이의 경계를 만드는 API라는 쪽으로 이해가 바뀌었다.
+
+접근성도 getter 안에 같이 묶었다. Headless라고 해서 DOM 계약까지 전부 사용처에 떠넘기면, 같은 hook을 쓰는 UI마다 접근성 속성을 빠뜨릴 수 있기 때문이다.
+
+```typescript
+role: 'combobox',
+'aria-haspopup': 'listbox',
+'aria-expanded': isOpen,
+'aria-controls': menuId,
+'aria-activedescendant':
+  isOpen && highlightedIndex >= 0 ? getItemId(highlightedIndex) : undefined,
+```
+
+버튼이 어떤 목록을 열고 지금 어떤 option을 가리키는지는 hook이 책임지는 편이 맞다고 봤다.
+
+Downshift를 보고 가장 많이 배운 건 API 이름이 단순한 취향 문제가 아니라는 점이었다.
+
+`selectedItem`은 선택값이 문자열 value가 아니라 item 객체라는 사실을 드러낸다. `highlightedIndex`는 확정된 선택값과 탐색 중인 위치가 다르다는 걸 드러낸다. `getToggleButtonProps`와 `getItemProps`는 사용처가 마크업을 소유하되, 선택 동작을 연결하는 방식은 hook이 제공한다는 경계를 드러낸다.
+
+이름이 상태 모델을 설명해 주면 사용처 코드도 덜 헷갈린다. 어떤 상태가 hook 안에서 움직이고, 어떤 값이 사용처로 나가는지도 더 잘 보인다.
+
+실제 사용처에서는 `getToggleButtonProps`, `getMenuProps`, `getItemProps`, `getItemState`를 조합해서 UI만 다르게 그렸다.
+
+```tsx
+const select = useSelect({
+  items,
+  defaultSelectedItem: items[1],
+  itemToKey: (item) => item.id,
+  isItemDisabled: (item) => item.stock === 0,
+});
+
+<button type="button" {...select.getToggleButtonProps()}>
+  {select.selectedItem?.label ?? '사이즈'}
+</button>
+
+{select.isOpen && (
+  <ul {...select.getMenuProps()}>
+    {items.map((item, index) => {
+      const { selected, highlighted, disabled } = select.getItemState({
+        item,
+        index,
+      });
+
+      return (
+        <li key={item.id} {...select.getItemProps({ item, index })}>
+          {item.label}
+        </li>
+      );
+    })}
+  </ul>
+)}
+```
+
+controlled 예시에서는 선택 상태를 사용처가 들고, hook은 변경 요청만 보낸다.
+
+```tsx
+const [selectedOption, setSelectedOption] = useState<TextOption | null>(null);
+
+const select = useSelect({
+  items,
+  selectedItem: selectedOption,
+  onSelectedItemChange: ({ selectedItem }) => setSelectedOption(selectedItem),
+  itemToKey: (item) => item.id,
+  isItemDisabled: (item) => item.stock === 0,
+});
+```
+
+## 테스트 코드를 동작 기준으로 읽기
+
+구현하다 보면 "이 정도면 되지 않을까"라고 생각하기 쉽다.
+
+그런데 Select는 키보드 입력, disabled option, controlled/uncontrolled처럼 화면에 바로 드러나지 않는 규칙이 많았다.
+
+그래서 테스트는 단순히 구현 결과를 확인하는 수단이 아니라, Select가 어떤 동작까지 다뤄야 하는지 정리하는 문서처럼 읽혔다.
+
+예를 들어 disabled item을 클릭했을 때 선택되지 않는지, ArrowDown이 disabled item을 건너뛰는지, Enter가 highlighted item을 선택하는지 같은 질문이 그대로 테스트가 됐다. Escape는 선택을 바꾸지 않고 닫기만 해야 했고, 모든 item이 disabled여도 깨지면 안 됐다. controlled 상태에서는 내부 state를 바꾸지 않고 callback만 호출해야 했다.
+
+이 질문에 답하다 보면 구현에서 공통으로 모아야 할 흐름이 보인다.
+
+마우스 클릭 선택, Enter 선택, 외부 액션 선택이 모두 `selectItem`을 타면 disabled 방어와 callback 호출을 한곳에서 처리할 수 있다. 키보드 이동은 `highlightedIndex`를 기준으로 움직이고, disabled skip도 같은 탐색 함수에서 처리할 수 있다.
+
+테스트를 쓰면서 Select가 어디까지 책임져야 하는지 조금씩 선명해졌다.
+
+테스트에서는 특히 prop getter가 사용처 이벤트와 내부 동작을 같이 살리는지 확인했다.
+
+```tsx
+it('옵션의 사용처 onClick도 병합되고, preventDefault하면 선택이 거부된다', async () => {
+  const user = userEvent.setup();
+  const consumerOnClick = vi.fn();
+  const onSelectedItemChange = vi.fn();
+
+  render(
+    <TestSelect
+      itemProps={{
+        onClick: (event) => {
+          consumerOnClick();
+          event.preventDefault();
+        },
+      }}
+      onSelectedItemChange={onSelectedItemChange}
+    />,
+  );
+
+  await user.click(getToggle());
+  await user.click(getOption('26'));
+
+  expect(consumerOnClick).toHaveBeenCalledTimes(1);
+  expect(onSelectedItemChange).not.toHaveBeenCalled();
+  expect(queryMenu()).toBeInTheDocument();
+});
+```
+
+controlled에서는 내부에서 선택해도 표시값이 바로 바뀌지 않는지도 확인했다. 부모 prop이 source of truth이기 때문이다.
+
+```tsx
+it('controlled 상태에서도 선택 시 onSelectedItemChange는 호출되고 표시값은 prop을 따른다', async () => {
+  const user = userEvent.setup();
+  const onSelectedItemChange = vi.fn();
+
+  render(
+    <TestSelect
+      selectedItem={defaultItems[1]}
+      onSelectedItemChange={onSelectedItemChange}
+    />,
+  );
+
+  await user.click(getToggle());
+  await user.click(getOption('26'));
+
+  expect(onSelectedItemChange).toHaveBeenCalledWith({
+    selectedItem: defaultItems[3],
+  });
+  expect(getToggle()).toHaveTextContent('24');
+});
+```
+
+접근성 계약도 테스트했다. `listbox`와 `option` role이 내려가는지, 선택된 option에 `aria-selected`가 붙는지, disabled option에 `aria-disabled`가 붙는지를 확인했다. 테스트를 쓰면서 Select의 책임 범위가 "값 변경"보다 넓다는 걸 더 분명하게 보게 됐다.
+
+## Select를 상태 흐름으로 바라보기
+
+이 과제를 하기 전에는 Select를 "값 하나를 고르는 컴포넌트" 정도로 생각했다.
+
+지금은 상태 흐름을 먼저 떠올리게 됐다.
+
+Select는 사용자 입력에 따라 `isOpen`, `selectedItem`, `highlightedIndex`, `disabled` 같은 상태가 함께 움직인다. 클릭, hover, ArrowUp, ArrowDown, Enter, Space, Escape 같은 입력은 각각 상태를 바꾸는 계기가 된다.
+
+Headless Select를 만든다는 건 이 상태 흐름을 UI에서 분리하는 일에 가까웠다.
+
+로직은 hook 안에 모으고, 표현은 사용처에 남긴다. 선택값은 객체 전체로 유지하되, 비교는 안정적인 key로 한다. 확정된 선택 상태와 탐색 중인 highlight 상태를 구분한다. disabled item은 스타일만 흐리게 만드는 것이 아니라 선택 로직 안에서 막는다.
+
+이 기준을 잡고 나니 Select 구현 방향이 조금 명확해졌다.
+
+## 배운 점
+
+Select는 그동안 UI 라이브러리로 가져다 쓰는 일이 많았다. 동작이 되면 그대로 넘겼고, 어떤 동작이 Select에서 기대되는 기본 동작인지 깊게 따져본 적은 많지 않았다.
+
+이번에는 Downshift 문서와 구현을 보면서 Select가 어떤 상태를 가져야 하는지, 키보드 입력에 어떻게 반응해야 하는지, DOM에는 어떤 속성이 연결되어야 하는지 하나씩 확인했다. MDN과 접근성 문서를 같이 보면서 평소에 라이브러리가 대신 처리해 주던 부분도 조금 더 의식하게 됐다.
+
+앞으로 UI 라이브러리를 쓸 때도 "잘 된다"에서 바로 멈추지 않고, 그 컴포넌트가 기본적으로 어떤 동작과 접근성 계약을 가져야 하는지 한 번 더 살펴보게 될 것 같다.
+
+인터페이스로 경계를 나누는 감각도 배웠다. `useSelect`가 알아야 하는 것과 사용처가 알아야 하는 것을 나누다 보니, API는 단순히 값을 주고받는 모양이 아니라 책임을 나누는 기준이라는 생각이 들었다.
+
+그런 의미에서 prop getter가 인상적이었다. 토글 버튼, 메뉴, 옵션이 알아야 하는 속성과 이벤트를 hook 안에 모아두고, 사용하는 쪽에서는 필요한 곳에 펼쳐서 붙이면 된다. 내부 동작을 매번 다시 연결하지 않아도 되고, 사용처는 화면을 그리는 일에 더 집중할 수 있었다.
+
+실무에서라면 `useSelect`만 제공하기보다는 Compound Component 형태의 `Select` 컴포넌트도 같이 둘 것 같다. 대부분의 화면에서는 정해진 Select 컴포넌트를 쓰는 편이 편하다. 다만 바텀시트처럼 완전히 다른 UI가 필요할 때도 있으니, 선택 로직은 `useSelect`로 꺼내 쓸 수 있게 열어두는 구조가 좋아 보였다.
+
+테스트 코드도 직접 경험했다. 라이브러리 성격의 hook은 커버해야 할 입력과 예외가 많아서 테스트가 꽤 촘촘해질 수밖에 없었다. 그래도 테스트를 작성해 두니 코드를 고친 뒤 같은 동작이 깨지지 않았는지 확인할 수 있었고, 그 점이 생각보다 든든했다.

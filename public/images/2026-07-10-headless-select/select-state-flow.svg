@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="460" viewBox="0 0 920 460" role="img" aria-labelledby="title desc">
+  <title id="title">Select state flow</title>
+  <desc id="desc">Closed and Open select states, with keyboard and click events changing highlightedIndex and selectedItem.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .label { font-size: 18px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .state { fill: #f8fafc; stroke: #334155; stroke-width: 2; }
+      .note { fill: #fff7ed; stroke: #fb923c; stroke-width: 1.5; }
+      .line { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .loop { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="920" height="460" rx="20" fill="#ffffff"/>
+  <rect x="45" y="52" width="250" height="120" rx="18" class="state"/>
+  <text x="170" y="106" text-anchor="middle" class="label">Closed</text>
+  <text x="170" y="134" text-anchor="middle" class="small">메뉴가 닫힌 상태</text>
+
+  <rect x="625" y="52" width="250" height="120" rx="18" class="state"/>
+  <text x="750" y="106" text-anchor="middle" class="label">Open</text>
+  <text x="750" y="134" text-anchor="middle" class="small">목록을 탐색하는 상태</text>
+
+  <path d="M 300 100 C 405 45, 515 45, 620 100" class="line"/>
+  <text x="460" y="42" text-anchor="middle" class="small">click trigger / ArrowDown / Enter / Space</text>
+
+  <path d="M 620 145 C 515 218, 405 218, 300 145" class="line"/>
+  <text x="460" y="220" text-anchor="middle" class="small">Escape</text>
+
+  <path d="M 750 180 C 850 230, 850 310, 750 338 C 650 310, 650 230, 750 180" class="loop"/>
+  <text x="750" y="286" text-anchor="middle" class="small">ArrowDown / ArrowUp</text>
+
+  <rect x="604" y="338" width="292" height="72" rx="14" class="note"/>
+  <text x="750" y="368" text-anchor="middle" class="small">highlightedIndex 변경</text>
+  <text x="750" y="392" text-anchor="middle" class="small">아직 선택값은 바꾸지 않음</text>
+
+  <path d="M 650 176 C 520 310, 400 310, 270 176" class="line"/>
+  <text x="460" y="322" text-anchor="middle" class="small">Enter / Space / click item</text>
+
+  <rect x="66" y="338" width="292" height="72" rx="14" class="note"/>
+  <text x="212" y="368" text-anchor="middle" class="small">selectedItem 변경</text>
+  <text x="212" y="392" text-anchor="middle" class="small">선택 확정 후 닫힘</text>
+</svg>
