@@ -1,0 +1,59 @@
+---
+title: WIL - 루프팩 4주차, Select와 Dialog로 배운 공통 UI의 경계
+date: 2026-07-12
+tags:
+  - 회고
+  - 프론트엔드
+  - React
+pinned: false
+---
+
+이번 주에 가장 크게 바뀐 건 Select를 "값 하나 고르는 UI"가 아니라 "상태 전이 규칙을 가진 컴포넌트"로 보기 시작했다는 점이다.
+
+Next.js 하네스를 세팅하고 그 위에서 Select와 Dialog를 직접 만들면서, 공통 UI의 핵심이 화면을 얼마나 예쁘게 그리느냐보다 상태와 동작의 계약을 어디까지 책임질지 정하는 데 있다는 걸 배웠다.
+
+Select는 `useSelect`라는 Headless hook으로, Dialog는 Trigger, Overlay, Content를 조립하는 Compound 구조로 구현했다. Select 설계 과정은 [별도 글](/posts/2026-07-10-headless-select-state-boundary)로 깊게 정리했고, 이 글에서는 한 주 동안 헷갈렸던 지점과 판단 기준을 중심으로 돌아보려고 한다. 전체 코드와 고민은 [PR](https://github.com/loopers-labs/loop-pack-fe-l2-vol1/pull/77)에 남겨두었다.
+
+## 🧠 이번 주에 새로 배운 것
+
+- Headless가 "UI를 안 만드는 것"이 아니라, 상태와 동작의 계약을 표현으로부터 분리하는 일이라는 걸 알게 됐다. `useSelect`는 열림, 닫힘, 선택, 하이라이트, 키보드 동작을 알고, 사용처는 그것을 어떤 DOM과 스타일로 보여줄지 안다.
+- prop getter는 단순히 이벤트를 붙여주는 헬퍼가 아니었다. `getToggleButtonProps`, `getItemProps` 안에 이벤트 병합, ref 병합, ARIA 속성을 묶으니 hook과 사용처 사이의 경계가 훨씬 분명해졌다.
+- controlled/uncontrolled를 판단할 때는 `undefined`와 `null`을 구분해야 했다. `undefined`는 prop을 넘기지 않았다는 뜻이고, `null`은 부모가 "선택값 없음"을 명시한 상태다. 그래서 `Boolean(selectedItem)` 같은 값의 truthy 여부로 판단하면 안 됐다.
+- scroll lock과 중첩 Dialog의 Escape 처리는 개별 컴포넌트 state만으로 풀 수 없었다. `document.body`의 overflow는 앱 전체에서 하나뿐인 자원이라, 모듈 스코프의 ref-count와 stack으로 관리해야 했다.
+- `aria-activedescendant`는 실제 DOM focus를 옵션으로 옮기지 않고도 현재 활성 옵션을 스크린리더에 알려주는 장치였다. 라이브러리 코드를 보면서 접근성 속성이 단순 부가 정보가 아니라 상태 모델의 일부라는 걸 느꼈다.
+- Next.js에서는 `page.tsx` 전체를 Client Component로 만들 필요가 없었다. 상호작용이 필요한 공통 UI 진입점에만 `'use client'` 경계를 두는 방식으로 서버 컴포넌트와 클라이언트 컴포넌트의 책임을 나눠보았다.
+
+## 💭 이런 고민이 있었어요
+
+**Select를 컴포넌트로 만들까, hook으로 만들까.** 처음엔 스타일이 포함된 `<Select />`를 생각했다. 그런데 같은 선택 로직으로 텍스트 옵션, 썸네일 옵션, 사이즈 옵션을 모두 렌더해야 했다. 컴포넌트로 가면 UI가 늘어날수록 props와 if 분기가 커질 것 같았다. render prop도 고민했지만, DOM 구조는 사용처가 갖고 hook은 상태와 동작 계약만 제공하는 쪽이 이번 과제의 Headless 방향에 더 맞다고 판단해 `useSelect`로 갔다.
+
+**상태와 핸들러를 어떻게 노출할까.** 처음엔 `select.handleKeyDown`처럼 필요한 핸들러를 낱개로 넘기면 된다고 생각했다. 막상 구현해 보니 넘겨야 할 값과 함수가 계속 늘어났고, 사용처가 매번 어느 요소에 무엇을 연결해야 하는지 알아야 했다. 그건 Headless라기보다 hook 내부 사정을 사용처에 떠넘기는 느낌이었다. Downshift처럼 `getToggleButtonProps`, `getItemProps`로 필요한 props를 통째로 넘기는 방식으로 바꾸고 나서야 사용처 코드가 단순해졌다.
+
+**바깥 클릭 닫기는 어떤 이벤트로 잡을까.** 처음엔 `blur`로 닫으면 될 줄 알았다. 그런데 `blur`는 focus 이동 기준이라 옵션을 클릭하는 과정에서 선택 전에 메뉴가 닫힐 수 있었다. `click`은 마우스 중심이라 터치와 펜까지 같은 경로로 다루기 애매했다. 결국 마우스, 터치, 펜을 함께 다루면서 사용자가 손을 뗀 시점에 판단할 수 있는 `pointerup`으로 정했다.
+
+**Dialog 인스턴스를 구분하는 토큰은 뭘로 만들까.** 중첩 Dialog에서 가장 위 Dialog만 닫으려면 stack에 쌓을 고유 값이 필요했다. 처음엔 `useState({})`로 객체 참조를 만들었는데, 값을 바꿀 일이 없는데 state를 쓰는 게 어색했다. `useId`도 후보였지만, 이 훅은 html id처럼 접근성 속성과 연결되는 값을 만들 때 더 자연스럽다고 이해했다. 최종적으로는 렌더 사이에 유지되는 단순 고유 값이 필요했으니 `useRef(Symbol())`로 정리했다. 되는 방법이 여러 개일 때 "돌아가는가"보다 "이 도구의 쓰임에 맞는가"를 기준으로 걸러본 경험이었다.
+
+**테스트는 어느 층에서 검증할까.** 처음엔 Playwright E2E를 먼저 떠올렸다. 그런데 이번 산출물의 핵심은 특정 페이지가 아니라 hook과 compound component의 API였다. 그래서 keyboard navigation, disabled skip, controlled/uncontrolled, 이벤트 병합, scroll lock 같은 계약을 hook/component 테스트로 확인하는 쪽을 택했다.
+
+## 💡 앞으로 실무에 써먹을 수 있을 것 같은 포인트
+
+- 라이브러리 코드를 읽을 때 "어떻게 구현했는지"보다 "어떤 경계를 API로 드러냈는지"를 보는 습관을 가져가고 싶다. Downshift, Radix, Base UI의 문서와 구현을 보면서 기본 동작의 범위와 책임 분리 기준을 많이 배웠다.
+- API 이름은 상태 모델을 설명한다. `value`가 아니라 `selectedItem`이라고 부르면 선택값이 단순 문자열이 아니라 객체라는 게 드러난다. `highlightedIndex`라고 부르면 확정된 선택값과 탐색 중인 위치가 다르다는 것도 드러난다.
+- 사용처 핸들러를 먼저 실행하고, `preventDefault`가 없을 때만 내부 동작을 실행하는 이벤트 병합 패턴은 공통 컴포넌트를 만들 때 바로 써먹을 수 있을 것 같다. 사용처가 기본 동작을 막을 수 있는 여지를 남기면서도 내부 동작의 일관성을 유지할 수 있었다.
+- Dialog가 열릴 때 스크롤바가 사라지며 본문이 덜그덕거리는 현상을 스크롤바 폭 보정으로 잡았다. 기능만 맞추는 게 아니라 이런 사용감까지 공통 컴포넌트의 책임으로 봐야 한다는 감각을 얻었다.
+
+## ✅ 이번 주에 조금 나아진 점
+
+지난 회고에서는 검증 근거를 충분히 남기지 못한 게 아쉬웠다. 이번에는 테스트 66개로 keyboard navigation부터 disabled item skip, controlled/uncontrolled, 이벤트 병합, scroll lock 복구까지 계약을 남겼다.
+
+특히 form 안에서 Dialog Trigger가 submit을 일으키는 버그를 테스트로 재현하고 고친 경험이 기억에 남는다. 그냥 "버그를 고쳤다"에서 끝난 게 아니라, 왜 `button`의 기본 type을 조심해야 하는지 테스트로 남겼기 때문이다.
+
+## 🤔 아쉬웠던 점 & 다음 주에 해보고 싶은 것
+
+- controlled/uncontrolled prop 조합을 타입으로 강제할지 아직 결론을 내리지 못했다. `open`만 있고 `onOpenChange`가 없는 조합, `open`과 `defaultOpen`이 같이 오는 조합을 TypeScript union으로 막을지, 런타임 경고나 문서로 남길지 더 고민해보고 싶다.
+- focus trap, typeahead, `stateReducer` 같은 기능은 이번 범위에서 뺐다. 지금은 디자인 시스템 정책도, 두 번째 소비자도 없는 상태라 미뤘지만, 실제 Dialog와 Select의 품질을 생각하면 언젠가 직접 구현해보고 싶은 영역이다.
+- 공통 UI에서 unit, component, E2E 테스트를 나누는 기준은 아직 명확하지 않다. 이번에는 component 테스트를 골랐지만, 실제 사용자가 보는 동작은 결국 브라우저 위에서 완성된다. 어떤 동작부터 E2E로 올려야 하는지 다음에는 더 분명한 기준을 잡아보고 싶다.
+
+이번 주는 라이브러리를 가져다 쓰기만 하던 컴포넌트를 직접 만들어 본 시간이었다. 직접 만들어 보니 그동안 라이브러리가 대신 처리해 주던 것이 단순한 UI가 아니라 상태 전이, 이벤트 병합, 접근성 속성, 전역 자원 관리 같은 세세한 계약들이었다는 게 보였다.
+
+그래서 Select를 "값 하나 고르는 UI"로 보던 시선이 "상태 전이 규칙을 가진 컴포넌트"로 바뀌었다. 다음에 공통 UI를 만들 때는 화면부터 보기보다, 이 컴포넌트가 어떤 상태를 책임지고 어떤 계약을 사용처에 제공해야 하는지부터 먼저 생각해보고 싶다.
