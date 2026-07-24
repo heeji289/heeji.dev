@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1260" viewBox="0 0 1400 1260" role="img" aria-labelledby="title desc">
+  <title id="title">Suspense가 fallback을 보여주고 다시 렌더링하는 흐름</title>
+  <desc id="desc">왼쪽에서 렌더링을 시작해 pending Promise로 인해 아래의 fallback까지 내려간다. Promise가 완료되면 오른쪽으로 이동해 같은 영역을 다시 렌더링하고 실제 UI로 교체한다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L13 7 L1 13 Z" fill="#465466"/>
+    </marker>
+    <filter id="shadow" x="-12%" y="-18%" width="124%" height="145%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity=".09"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 42px; font-weight: 750; letter-spacing: -.8px; }
+      .phase { font-size: 20px; font-weight: 700; letter-spacing: .5px; }
+      .step-title { font-size: 28px; font-weight: 720; }
+      .step-sub { font-size: 20px; font-weight: 500; fill: #64748b; }
+      .number { font-size: 20px; font-weight: 750; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
+      .arrow-label { font-size: 18px; font-weight: 650; fill: #687586; }
+      .flow { fill: none; stroke: #465466; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .card { stroke-width: 3; filter: url(#shadow); }
+      .skeleton { fill: #d9c9de; }
+      .product { fill: #c2dbc9; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="1260" fill="#fbfaf7"/>
+
+  <text class="title" x="700" y="74" text-anchor="middle">Suspense가 fallback을 보여주는 흐름</text>
+
+  <text class="phase" x="340" y="144" text-anchor="middle" fill="#4d8fba">Promise 대기 중</text>
+  <path d="M155 165 H525" stroke="#94bdd4" stroke-width="4" stroke-linecap="round"/>
+  <text class="phase" x="1060" y="144" text-anchor="middle" fill="#4f8e63">Promise 완료 후</text>
+  <path d="M875 165 H1245" stroke="#93c0a1" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 1. Render -->
+  <rect class="card" x="130" y="210" width="420" height="126" rx="24" fill="#e4f0f9" stroke="#5e9cc7"/>
+  <circle cx="130" cy="210" r="25" fill="#4d8fba"/>
+  <text class="number" x="130" y="211">1</text>
+  <text class="step-title" x="340" y="264" text-anchor="middle">렌더링 시도</text>
+  <text class="step-sub" x="340" y="300" text-anchor="middle">React가 컴포넌트를 그리기 시작한다</text>
+
+  <!-- 2. Read -->
+  <rect class="card" x="130" y="405" width="420" height="126" rx="24" fill="#e4f0f9" stroke="#5e9cc7"/>
+  <circle cx="130" cy="405" r="25" fill="#4d8fba"/>
+  <text class="number" x="130" y="406">2</text>
+  <text class="step-title" x="340" y="459" text-anchor="middle">pending Promise를 읽음</text>
+  <text class="step-sub" x="340" y="495" text-anchor="middle">use(promise)가 아직 대기 중인 값을 만난다</text>
+
+  <!-- 3. Suspend -->
+  <rect class="card" x="130" y="600" width="420" height="126" rx="24" fill="#e4f0f9" stroke="#5e9cc7"/>
+  <circle cx="130" cy="600" r="25" fill="#4d8fba"/>
+  <text class="number" x="130" y="601">3</text>
+  <text class="step-title" x="340" y="654" text-anchor="middle">현재 렌더링을 중단</text>
+  <text class="step-sub" x="340" y="690" text-anchor="middle">Promise가 끝날 때까지 이 영역을 suspend한다</text>
+
+  <!-- 4. Fallback -->
+  <rect class="card" x="130" y="795" width="420" height="236" rx="24" fill="#f0e8f5" stroke="#a06cad"/>
+  <circle cx="130" cy="795" r="25" fill="#8f5f9b"/>
+  <text class="number" x="130" y="796">4</text>
+  <text class="step-title" x="340" y="850" text-anchor="middle">가장 가까운 Suspense</text>
+  <text class="step-sub" x="340" y="884" text-anchor="middle">대신 fallback을 화면에 보여준다</text>
+  <rect x="205" y="920" width="270" height="72" rx="14" fill="#ffffff" stroke="#dfcfe4" stroke-width="2"/>
+  <circle class="skeleton" cx="240" cy="956" r="18"/>
+  <rect class="skeleton" x="274" y="940" width="155" height="12" rx="6"/>
+  <rect class="skeleton" x="274" y="964" width="108" height="10" rx="5"/>
+
+  <!-- 5. Resolve event -->
+  <rect x="568" y="1084" width="264" height="92" rx="46" fill="#e5f3e9" stroke="#5a9c70" stroke-width="3"/>
+  <circle cx="593" cy="1084" r="25" fill="#4f8e63"/>
+  <text class="number" x="593" y="1085">5</text>
+  <text class="step-title" x="707" y="1140" text-anchor="middle" font-size="25">Promise 완료</text>
+
+  <!-- 6. Retry and final UI -->
+  <rect class="card" x="850" y="365" width="420" height="286" rx="24" fill="#e5f3e9" stroke="#5a9c70"/>
+  <circle cx="850" cy="365" r="25" fill="#4f8e63"/>
+  <text class="number" x="850" y="366">6</text>
+  <text class="step-title" x="1060" y="421" text-anchor="middle">중단된 트리를 다시 렌더링</text>
+  <text class="step-sub" x="1060" y="457" text-anchor="middle">완료된 값으로 fallback을 실제 UI로 바꾼다</text>
+  <rect x="925" y="495" width="270" height="112" rx="14" fill="#ffffff" stroke="#c8dfcf" stroke-width="2"/>
+  <rect class="product" x="947" y="516" width="64" height="70" rx="9"/>
+  <rect class="product" x="1028" y="519" width="138" height="12" rx="6"/>
+  <rect class="product" x="1028" y="545" width="102" height="10" rx="5"/>
+  <rect x="1028" y="572" width="74" height="14" rx="7" fill="#70a181"/>
+
+  <!-- Downward pending path -->
+  <path class="flow" d="M340 336 V405"/>
+  <path class="flow" d="M340 531 V600"/>
+  <path class="flow" d="M340 726 V795"/>
+
+  <!-- Fallback waits, then resolve -->
+  <path class="flow" d="M340 1031 C340 1105 430 1130 568 1130"/>
+  <text class="arrow-label" x="372" y="1098">fallback 표시 중</text>
+
+  <!-- Resolve goes back up to the suspended subtree -->
+  <path class="flow" d="M832 1130 C1090 1130 1060 865 1060 651"/>
+  <text class="arrow-label" x="1030" y="910" text-anchor="middle">React가 재시도</text>
+
+  <text x="700" y="1222" text-anchor="middle" font-size="19" font-weight="500" fill="#64748b">Promise가 완료되면 React는 Suspense 경계 안쪽의 중단된 렌더링을 다시 시도한다.</text>
+</svg>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1080" viewBox="0 0 1400 1080" role="img" aria-labelledby="title desc">
+  <title id="title">URL 상태 훅의 호출 경로</title>
+  <desc id="desc">앱 코드의 useProductListUrlState에서 시작해 nuqs, Next.js useSearchParams, 서버 프리렌더링 처리까지 호출을 따라 안쪽으로 들어가는 중첩 구조</desc>
+  <defs>
+    <filter id="shadow" x="-12%" y="-20%" width="124%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1e293b" flood-opacity=".08"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L13 7 L1 13 Z" fill="#465466"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 42px; font-weight: 750; letter-spacing: -.8px; }
+      .subtitle { font-size: 20px; font-weight: 500; fill: #64748b; }
+      .layer-title { font-size: 19px; font-weight: 750; letter-spacing: .8px; }
+      .layer-desc { font-size: 17px; font-weight: 500; fill: #64748b; }
+      .node-title { font-size: 27px; font-weight: 720; }
+      .node-desc { font-size: 18px; font-weight: 500; fill: #64748b; }
+      .flow { fill: none; stroke: #465466; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .node { stroke-width: 2.5; filter: url(#shadow); }
+      .layer { stroke-width: 3; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="1080" fill="#fbfaf7"/>
+  <text class="title" x="700" y="66" text-anchor="middle">URL 상태를 읽을 때 호출이 내려가는 경로</text>
+  <text class="subtitle" x="700" y="105" text-anchor="middle">호출을 따라갈수록 라이브러리와 프레임워크 안쪽으로 들어간다</text>
+
+  <!-- App layer -->
+  <rect class="layer" x="70" y="150" width="1260" height="850" rx="30" fill="#edf5fb" stroke="#5e9cc7"/>
+  <rect x="105" y="128" width="162" height="44" rx="22" fill="#4d8fba"/>
+  <text class="layer-title" x="186" y="156" text-anchor="middle" fill="#ffffff">APP CODE</text>
+
+  <rect class="node" x="400" y="215" width="600" height="102" rx="22" fill="#ffffff" stroke="#78add0"/>
+  <text class="node-title" x="700" y="276" text-anchor="middle">useProductListUrlState()</text>
+
+  <!-- nuqs layer -->
+  <rect class="layer" x="150" y="365" width="1100" height="565" rx="28" fill="#f4edf6" stroke="#a06cad"/>
+  <rect x="185" y="343" width="118" height="44" rx="22" fill="#8f5f9b"/>
+  <text class="layer-title" x="244" y="371" text-anchor="middle" fill="#ffffff">NUQS</text>
+
+  <rect class="node" x="250" y="445" width="370" height="96" rx="20" fill="#ffffff" stroke="#b68ac0"/>
+  <text class="node-title" x="435" y="487" text-anchor="middle">useQueryStates()</text>
+  <text class="node-desc" x="435" y="519" text-anchor="middle">URL을 상태처럼 쓸 수 있게 하는 hook</text>
+
+  <rect class="node" x="780" y="445" width="370" height="96" rx="20" fill="#ffffff" stroke="#b68ac0"/>
+  <text class="node-title" x="965" y="503" text-anchor="middle">Next.js 어댑터</text>
+
+  <!-- Next.js layer -->
+  <rect class="layer" x="230" y="590" width="940" height="280" rx="26" fill="#e8f5ec" stroke="#5a9c70"/>
+  <rect x="265" y="568" width="146" height="44" rx="22" fill="#4f8e63"/>
+  <text class="layer-title" x="338" y="596" text-anchor="middle" fill="#ffffff">NEXT.JS</text>
+
+  <rect class="node" x="490" y="665" width="420" height="92" rx="20" fill="#ffffff" stroke="#81b093"/>
+  <text class="node-title" x="700" y="721" text-anchor="middle">useSearchParams()</text>
+
+  <!-- Server prerendering core -->
+  <rect class="layer" x="330" y="790" width="740" height="128" rx="24" fill="#fbf0df" stroke="#c18f49"/>
+  <rect x="365" y="768" width="258" height="44" rx="22" fill="#ad7a39"/>
+  <text class="layer-title" x="494" y="796" text-anchor="middle" fill="#ffffff">SERVER PRERENDERING</text>
+  <text class="node-title" x="700" y="846" text-anchor="middle">useDynamicSearchParams()</text>
+  <text class="node-desc" x="700" y="881" text-anchor="middle">렌더링 방식에 따라 suspend 또는 CSR bailout을 결정한다</text>
+
+  <!-- Call path -->
+  <path class="flow" d="M700 317 C700 360 740 372 740 430 H435 V445"/>
+  <path class="flow" d="M620 493 H780"/>
+  <path class="flow" d="M965 541 C965 610 850 620 760 665"/>
+  <path class="flow" d="M700 757 V790"/>
+  <text x="748" y="781" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="17" font-weight="650" fill="#7c6a50">서버 프리렌더링에서만</text>
+
+  <text x="700" y="1040" text-anchor="middle" font-size="19" font-weight="500" fill="#64748b">처음 호출한 훅 하나를 따라가자, 앱 코드 바깥의 네 개 층이 연결됐다.</text>
+</svg>
