@@ -1,0 +1,533 @@
+---
+title: FSD로 폴더를 옮기다 세 번 멈춰 선 이유
+date: 2026-07-31
+tags:
+  - 회고
+  - 프론트엔드
+  - FSD
+  - Zustand
+  - TanStack Query
+pinned: false
+---
+
+6주차에는 FSD를 공부한 뒤, 이전에 만든 커머스 프로젝트를 FSD 구조로 바꾸는 과제를 진행했다.
+
+처음에는 문서에 나온 레이어에 맞춰 폴더를 옮기면 될 거라고 생각했다. 하지만 실제 코드에 적용해보니 문서만으로 답하기 어려운 지점이 몇 군데 있었다. 이번 글에서는 그 과정에서 생긴 세 가지 고민을 정리해보려고 한다.
+
+## `widgets`를 꼭 만들어야 할까?
+
+FSD 문서의 레이어 구성을 그대로 가져오려다 보니 `widgets`가 꼭 필요한지 의문이 들었다.
+
+widget은 entity와 feature를 조합해 큰 UI 블록을 만든다. 그런데 이 조합은 page에서도 할 수 있다. 실제 widget 후보는 헤더와 상품 카드 조합뿐이었고, 둘 다 page나 layout에서 조합할 수 있었다. 그렇다면 중간에 widget을 하나 더 두는 것보다 필요한 곳에서 바로 조합하는 편이 낫지 않을까?
+
+### 헤더는 widget보다 layout에 가까웠다
+
+헤더는 홈과 상품 목록에서 함께 쓰고, 장바구니와 위시리스트 개수도 보여준다. 처음에는 widget 후보라고 생각했다.
+
+하지만 헤더를 공유해야 하는 범위가 `(commerce)` route group과 정확히 겹쳤다. App Router의 layout이 이미 여러 경로에서 공유하는 UI를 맡고 있으므로, 별도 widget을 만들지 않고 `(commerce)/layout.tsx`에 헤더를 뒀다. 덕분에 `/demos`에 커머스 헤더가 노출되던 문제도 함께 해결됐다.
+
+```text
+src/app/
+├── (commerce)/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── products/page.tsx
+└── demos/page.tsx
+```
+
+### 상품 카드 조합은 page에 남겼다
+
+`ProductCard`는 상품 정보를 보여주는 entity UI이고, 찜 버튼과 장바구니 버튼은 feature다. `ProductCard`가 버튼을 직접 import하는 대신 page가 action slot으로 넣도록 했다.
+
+```tsx
+<ProductCard
+  product={product}
+  actions={
+    <>
+      <WishlistToggleButton
+        productId={product.id}
+        productName={product.name}
+      />
+      <CartToggleButton
+        productId={product.id}
+        productName={product.name}
+      />
+    </>
+  }
+/>
+```
+
+이 조합은 홈과 상품 목록에서 함께 쓰지만, 겹치는 코드는 버튼을 넣는 몇 줄뿐이다. 만약 홈에서만 찜 버튼이 빠진다면 공통 widget에는 홈과 상품 목록을 구분하는 prop이 추가된다. 그렇게 되면 공용화의 의미도 금방 흐려질 것 같았다.
+
+그래서 `ProductCard`의 action slot에 버튼을 넣는 몇 줄까지 공용화하지는 않기로 했다. 지금은 각 page가 필요한 조합을 직접 보여주는 편이 더 단순했다.
+
+<figure style={{ margin: '32px 0' }}>
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+      gap: '16px',
+    }}
+  >
+    <div
+      style={{
+        padding: '20px',
+        border: '1px solid rgba(125, 125, 125, 0.3)',
+        borderRadius: '12px',
+        background: 'rgba(125, 125, 125, 0.06)',
+      }}
+    >
+      <strong style={{ display: 'block', marginBottom: '16px', textAlign: 'center' }}>
+        widget을 둘 때
+      </strong>
+      <div style={{ padding: '10px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+        Page
+      </div>
+      <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+      <div style={{ padding: '10px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center', background: 'rgba(14, 165, 233, 0.1)' }}>
+        Widget
+      </div>
+      <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', fontSize: '13px' }}>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>ProductCard</div>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>Cart</div>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>Wishlist</div>
+      </div>
+    </div>
+
+    <div
+      style={{
+        padding: '20px',
+        border: '1px solid rgba(125, 125, 125, 0.3)',
+        borderRadius: '12px',
+        background: 'rgba(125, 125, 125, 0.06)',
+      }}
+    >
+      <strong style={{ display: 'block', marginBottom: '16px', textAlign: 'center' }}>
+        현재 선택
+      </strong>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'center', fontSize: '13px' }}>
+        <div style={{ padding: '9px 4px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>Commerce Layout</div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '9px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>Header</div>
+      </div>
+      <div style={{ margin: '14px 0', borderTop: '1px dashed rgba(125, 125, 125, 0.3)' }} />
+      <div style={{ padding: '10px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+        Page
+      </div>
+      <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', fontSize: '13px' }}>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>ProductCard</div>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>Cart</div>
+        <div style={{ padding: '8px 4px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>Wishlist</div>
+      </div>
+    </div>
+  </div>
+  <figcaption style={{ marginTop: '12px', textAlign: 'center', fontSize: '14px', opacity: 0.7 }}>
+    조합을 widget으로 옮겨도 책임이 사라지는 것은 아니었다.
+  </figcaption>
+</figure>
+
+그래서 현재 구조에는 `widgets`를 만들지 않았다. 헤더는 `(commerce)` layout에 두고, 상품 카드 조합은 `_pages/home`과 `_pages/products`에 조금씩 중복해서 남겼다.
+
+나중에 여러 페이지에서 같은 UI 블록을 반복해 쓰고 함께 수정할 일이 생긴다면, 그때 widget으로 올려도 늦지 않다.
+
+## 하나의 Zustand store는 누가 조합해야 할까?
+
+두 번째 고민은 기존의 `shared/store.ts`에서 시작됐다. 이 파일 하나가 장바구니와 위시리스트 상태를 모두 알고 있었다.
+
+```text
+shared/store.ts
+├── cart slice
+├── wishlist slice
+└── persist
+```
+
+`shared`에는 도메인을 모르는 기반 코드가 있어야 한다. 그런데 이 store는 장바구니와 위시리스트를 직접 import한다. FSD로 옮기자마자 걸리는 파일이었다.
+
+각 slice의 위치는 금방 정했다. 장바구니 상태와 토글 규칙은 `entities/cart`로, 위시리스트 쪽은 `entities/wishlist`로 옮기면 된다.
+
+```text
+entities/
+├── cart/model/cart-slice.ts
+└── wishlist/model/wishlist-slice.ts
+```
+
+문제는 둘을 합치는 store였다. slice의 주인은 찾았는데 조합의 주인이 사라졌다.
+
+Zustand 문서에서는 앱의 전역 상태를 한 store에 두고, 커지면 slice로 나누는 방식을 권장한다. `persist` 같은 middleware도 slice마다 붙이지 말고 합친 store에 붙이라고 한다.
+
+이 방식을 그대로 쓰려면 cart와 wishlist를 한곳에서 다시 합쳐야 한다. 그런데 그 한곳을 FSD의 어느 레이어에 둬야 할까?
+
+> Zustand의 권장 패턴을 지키려고 FSD의 예외를 만드는 게 맞을까?
+
+Zustand와 FSD의 권장안을 동시에 지키기 어려웠다. 후보를 하나씩 놓고 무엇이 불편해지는지 적어봤다.
+
+### 네 가지 위치를 import 방향으로 비교했다
+
+| 후보 | 좋아 보였던 이유 | 생기는 문제 |
+| --- | --- | --- |
+| `_app/store` | 앱 전역 store 설정이라는 의미에 가장 잘 맞는다 | features가 상위 app 레이어를 import할 수 없어 Provider와 Context 주입이 필요하다 |
+| `shared/store` | 모든 레이어에서 바로 접근할 수 있다 | shared가 cart와 wishlist를 알아야 해서 상향 의존과 도메인 오염이 생긴다 |
+| cart와 wishlist의 독립 store | FSD 의존 관계가 가장 단순하다 | 하나의 store와 통합 persist를 포기하고 복원도 따로 관리해야 한다 |
+| `entities/client-state` | slice 조합과 persist를 한곳에 유지할 수 있다 | 비즈니스 entity가 아닌 기술적인 slice가 생기고 entity끼리 연결해야 한다 |
+
+#### app에 두면 접근 경로가 하나 더 생긴다
+
+처음에는 `_app/store`가 가장 맞아 보였다. FSD 문서도 app 레이어의 예시로 전역 store 설정을 든다.
+
+문제는 store를 실제로 읽는 쪽이 장바구니 버튼과 위시리스트 버튼 같은 feature라는 점이다. 하위 레이어인 feature에서 app의 store를 import할 수는 없다. app에서 store를 만든 뒤 Provider로 내려주고, feature는 Context로 받으면 해결되기는 한다.
+
+다만 그러면 Zustand를 쓰며 얻었던 "Provider 없이 바로 구독한다"는 단순함을 포기해야 한다. store를 app에 두는 대신 접근용 배관이 생긴다.
+
+#### shared에 두면 의존 방향을 거스른다
+
+`shared/store`는 지금 구조를 그대로 쓰면 되니 제일 간단했다. 대신 shared가 entity를 알아버린다. 이건 이번에 구조를 바꾸는 이유부터 흔드는 선택이라 일찍 제외했다.
+
+#### store를 나누면 복원 과정도 나뉜다
+
+cart와 wishlist에 store를 하나씩 두는 방법은 생각보다 괜찮았다. 둘은 서로의 상태를 읽지 않으니 FSD 규칙도 깔끔하게 지킬 수 있다.
+
+대신 지금 하나인 저장 키와 복원 과정이 둘로 갈라진다. persist 설정도 두 벌, hydration 완료 여부도 두 벌이 된다. 테스트와 초기화 경로도 따로 챙겨야 한다.
+
+물론 store가 꼭 하나여야 한다는 기능 요구사항은 없다. 둘로 나눠도 화면은 똑같이 만들 수 있다.
+
+그렇지만 지금 cart와 wishlist는 모두 브라우저 저장소에서 함께 복원되는 클라이언트 상태다. 저장하거나 초기화하는 시점도 같다. 아직 나눌 이유가 없는 흐름을 폴더 규칙 때문에 둘로 쪼개는 쪽이 더 어색하게 느껴졌다.
+
+#### 그래서 예외를 한곳에 모았다
+
+그래서 `entities/client-state`라는 기술적인 slice를 하나 두었다. cart와 wishlist는 `@x` Public API로 client-state에 필요한 slice만 내준다.
+
+솔직히 이 이름은 지금도 썩 마음에 들지 않는다. FSD의 entity는 보통 상품이나 장바구니처럼 비즈니스에서 쓰는 말인데 `client-state`는 기술 용어다. FSD를 깔끔하게 적용했다기보다, 단일 store를 유지하면서 생긴 예외를 눈에 잘 띄는 곳에 모아둔 쪽에 가깝다.
+
+```text
+entities/
+├── cart/
+│   ├── model/cart-slice.ts
+│   └── @x/client-state.ts
+├── wishlist/
+│   ├── model/wishlist-slice.ts
+│   └── @x/client-state.ts
+└── client-state/
+    ├── index.ts
+    └── model/
+        ├── hooks.ts
+        └── store.ts
+```
+
+실제 store에서 조합 부분만 떼어보면 두 `@x` 진입점에서 slice를 가져와 합치는 구조다.
+
+```ts
+import {
+  createCartSlice,
+  type CartSlice,
+} from '@/entities/cart/@x/client-state';
+import {
+  createWishlistSlice,
+  type WishlistSlice,
+} from '@/entities/wishlist/@x/client-state';
+
+type BoundState = CartSlice & WishlistSlice;
+
+export const useBoundStore = create<BoundState>()(
+  persist(
+    (...args) => ({
+      ...createCartSlice(...args),
+      ...createWishlistSlice(...args),
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: validatedStorage,
+      skipHydration: true,
+    },
+  ),
+);
+```
+
+`@x`는 같은 Entities 레이어의 서로 다른 slice를 연결할 때 쓰는 예외적인 Public API다. cart의 일반 Public API에는 slice 생성 함수를 내보내지 않았다. `client-state`만 전용 경로로 가져갈 수 있다.
+
+<figure style={{ margin: '32px 0' }}>
+  <div
+    style={{
+      padding: '20px',
+      border: '1px solid rgba(125, 125, 125, 0.3)',
+      borderRadius: '12px',
+      background: 'rgba(125, 125, 125, 0.06)',
+    }}
+  >
+    <strong style={{ display: 'block', marginBottom: '14px', textAlign: 'center' }}>
+      각 도메인이 소유한 slice
+    </strong>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
+      <div style={{ padding: '10px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>
+        Cart Slice
+      </div>
+      <div style={{ padding: '10px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>
+        Wishlist Slice
+      </div>
+    </div>
+
+    <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', fontSize: '13px' }}>
+      <div style={{ padding: '9px 4px', border: '1px dashed rgba(14, 165, 233, 0.65)', borderRadius: '8px', textAlign: 'center', background: 'rgba(14, 165, 233, 0.08)' }}>
+        cart/@x/client-state
+      </div>
+      <div style={{ padding: '9px 4px', border: '1px dashed rgba(14, 165, 233, 0.65)', borderRadius: '8px', textAlign: 'center', background: 'rgba(14, 165, 233, 0.08)' }}>
+        wishlist/@x/client-state
+      </div>
+    </div>
+
+    <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↘ &nbsp;&nbsp;&nbsp; ↙</div>
+
+    <div style={{ maxWidth: '360px', margin: '0 auto', padding: '14px', border: '1px solid rgba(14, 165, 233, 0.65)', borderRadius: '10px', textAlign: 'center', background: 'rgba(14, 165, 233, 0.12)' }}>
+      <strong>Client State Store</strong>
+      <div style={{ marginTop: '8px', padding: '6px', borderRadius: '6px', background: 'rgba(125, 125, 125, 0.12)', fontSize: '13px' }}>
+        persist middleware
+      </div>
+    </div>
+
+    <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+
+    <div style={{ maxWidth: '360px', margin: '0 auto', padding: '10px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>
+      useCart · useWishlist
+    </div>
+
+    <div style={{ padding: '6px', textAlign: 'center', opacity: 0.55 }}>↓</div>
+
+    <div style={{ maxWidth: '360px', margin: '0 auto', padding: '10px', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '8px', textAlign: 'center' }}>
+      Cart · Wishlist Features
+    </div>
+  </div>
+  <figcaption style={{ marginTop: '12px', textAlign: 'center', fontSize: '14px', opacity: 0.7 }}>
+    결합은 남았지만 @x라는 통로 하나에 모았다.
+  </figcaption>
+</figure>
+
+`client-state`를 선택해도 결합이 사라지는 건 아니다. 대신 cart와 wishlist를 함께 알아야 하는 지점을 통합 store 한곳에 모을 수 있었다.
+
+처음에는 통합 store가 들어갈 완벽한 폴더를 찾고 싶었다. 후보를 놓고 보니 그런 곳은 없었다.
+
+app에 두면 Provider가 필요하고, entities에 두면 `@x` 결합이 남는다. store를 나누면 persist와 복원 코드가 늘어난다. 비용이 없어지는 게 아니라 자리만 바뀌었다.
+
+이번에는 그중 `@x` 결합을 골랐다. cart와 wishlist의 저장 시점이 달라지거나 `client-state`가 조합하는 entity가 늘어나면 이야기가 달라진다. 그때는 store를 나누거나 app에서 Provider로 주입하는 쪽을 다시 봐야 한다.
+
+## 이전 데이터가 있는데 왜 목록이 사라졌을까?
+
+상품 조회에 실패했다고 페이지 전체를 에러 화면으로 바꾸고 싶지는 않았다. 이미 보던 상품이 있다면 그대로 보여주고, 새 데이터를 가져오지 못했다는 배너와 다시 시도 버튼만 띄우는 편이 자연스럽다고 생각했다.
+
+반대로 한 번도 성공한 적이 없어 보여줄 데이터가 없다면 목록 영역에 에러 화면이 필요하다. 검색과 필터까지 사라지지 않도록 예상 가능한 조회 실패는 `error.tsx`로 던지지 않고 해당 영역에서 처리하기로 했다.
+
+```text
+데이터 없음 + 요청 실패 → 목록 영역 에러
+데이터 있음 + 갱신 실패 → 기존 화면 유지 + 에러 배너
+```
+
+같은 queryKey를 재조회할 때는 이 정책이 잘 동작했다. 갱신이 실패해도 캐시에 마지막 성공 데이터가 남기 때문이다.
+
+### 페이지를 넘기자 가정이 깨졌다
+
+문제는 페이지 전환이었다. 상품 목록의 queryKey에는 현재 페이지가 들어간다.
+
+```ts
+queryKey: ['products', 'list', conditions]
+```
+
+1페이지에서 2페이지로 이동하면 2페이지 조건을 가진 새 query가 생긴다. 새 요청을 기다리는 동안 화면이 비지 않도록 `placeholderData`에는 1페이지 결과를 넣었다.
+
+```ts
+placeholderData: keepPreviousPage(conditions)
+```
+
+페이지를 넘기는 동안에는 예상대로 1페이지 상품과 로딩 안내가 함께 보였다. 이 모습을 보고 2페이지 요청이 실패해도 이전 목록이 남을 거라고 생각했다.
+
+Playwright로 2페이지 요청에 500을 주입해보니 결과는 달랐다. 재시도가 끝나고 error 상태가 되는 순간 1페이지 목록이 사라지고 목록 영역의 에러 화면이 나타났다.
+
+<figure style={{ margin: '32px 0' }}>
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '16px',
+    }}
+  >
+    <a
+      href="/images/2026-07-31-week06-fsd/placeholder-1-success.png"
+      target="_blank"
+      rel="noreferrer"
+      style={{ color: 'inherit', textDecoration: 'none' }}
+    >
+      <div style={{ overflow: 'hidden', border: '1px solid rgba(125, 125, 125, 0.3)', borderRadius: '10px' }}>
+        <div style={{ padding: '9px 12px', fontSize: '13px', background: 'rgba(125, 125, 125, 0.08)' }}>
+          <strong>1. 정상</strong> · 1페이지 성공 데이터
+        </div>
+        <img
+          src="/images/2026-07-31-week06-fsd/placeholder-1-success.png"
+          alt="1페이지 상품 목록을 정상적으로 보여주는 화면"
+          style={{ display: 'block', width: '100%', aspectRatio: '2 / 1', objectFit: 'cover' }}
+        />
+      </div>
+    </a>
+    <a
+      href="/images/2026-07-31-week06-fsd/placeholder-2-pending.png"
+      target="_blank"
+      rel="noreferrer"
+      style={{ color: 'inherit', textDecoration: 'none' }}
+    >
+      <div style={{ overflow: 'hidden', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '10px' }}>
+        <div style={{ padding: '9px 12px', fontSize: '13px', background: 'rgba(14, 165, 233, 0.1)' }}>
+          <strong>2. 요청 중</strong> · placeholder 표시
+        </div>
+        <img
+          src="/images/2026-07-31-week06-fsd/placeholder-2-pending.png"
+          alt="다음 페이지를 요청하는 동안 이전 목록과 로딩 안내를 보여주는 화면"
+          style={{ display: 'block', width: '100%', aspectRatio: '2 / 1', objectFit: 'cover' }}
+        />
+      </div>
+    </a>
+    <a
+      href="/images/2026-07-31-week06-fsd/placeholder-3-error.png"
+      target="_blank"
+      rel="noreferrer"
+      style={{ color: 'inherit', textDecoration: 'none' }}
+    >
+      <div style={{ overflow: 'hidden', border: '1px solid rgba(239, 68, 68, 0.55)', borderRadius: '10px' }}>
+        <div style={{ padding: '9px 12px', fontSize: '13px', background: 'rgba(239, 68, 68, 0.08)' }}>
+          <strong>3. 실패</strong> · 목록 영역 에러
+        </div>
+        <img
+          src="/images/2026-07-31-week06-fsd/placeholder-3-error.png"
+          alt="재시도가 끝난 뒤 상품 목록 대신 에러 안내를 보여주는 화면"
+          style={{ display: 'block', width: '100%', aspectRatio: '2 / 1', objectFit: 'cover' }}
+        />
+      </div>
+    </a>
+  </div>
+  <figcaption style={{ marginTop: '12px', textAlign: 'center', fontSize: '14px', opacity: 0.7 }}>
+    2페이지를 요청하는 동안 보이던 목록은 요청이 실패하자 사라졌다. 이미지를 누르면 크게 볼 수 있다.
+  </figcaption>
+</figure>
+
+> 분명 조금 전까지 목록이 보였는데, 왜 실패하는 순간 `data`가 없어진 걸까?
+
+### 화면에는 같아 보여도 캐시에는 달랐다
+
+문서와 `QueryObserver` 코드를 확인해보니, 배경 재조회 때 남은 data와 페이지 전환 때 보인 placeholder는 저장된 위치가 달랐다.
+
+- 같은 queryKey를 다시 조회할 때는 마지막 성공 데이터가 현재 query의 캐시에 남아 있다. 갱신이 실패해도 화면에 그릴 `data`가 있다.
+- 페이지를 바꾸면 queryKey도 바뀐다. 화면에 보인 1페이지 결과는 2페이지 캐시에 저장된 값이 아니라 pending 동안만 observer가 보여준 placeholder다.
+
+`placeholderData`는 새 query가 pending인 동안 적용된다. placeholder를 받은 observer 결과는 success이며 `isPlaceholderData`가 true다. 요청이 실패하면 placeholder가 제거되고, 아직 성공한 적 없는 2페이지 캐시에는 남아 있는 데이터가 없다.
+
+<figure style={{ margin: '32px 0' }}>
+  <div
+    style={{
+      padding: '20px',
+      border: '1px solid rgba(125, 125, 125, 0.3)',
+      borderRadius: '12px',
+      background: 'rgba(125, 125, 125, 0.06)',
+      overflowX: 'auto',
+    }}
+  >
+    <div style={{ minWidth: '560px' }}>
+      <strong style={{ display: 'block', marginBottom: '10px' }}>
+        같은 queryKey를 다시 조회할 때
+      </strong>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto 1fr', gap: '7px', alignItems: 'center', fontSize: '13px' }}>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>성공 데이터</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>cache 저장</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>재조회 중</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>data 유지</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(239, 68, 68, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>재조회 실패</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>data 유지</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(34, 197, 94, 0.55)', borderRadius: '8px', textAlign: 'center', background: 'rgba(34, 197, 94, 0.08)' }}>
+          <strong>화면 유지</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>에러 배너</small>
+        </div>
+      </div>
+
+      <div style={{ margin: '20px 0', borderTop: '1px dashed rgba(125, 125, 125, 0.3)' }} />
+
+      <strong style={{ display: 'block', marginBottom: '10px' }}>
+        페이지가 바뀌어 새 queryKey가 생길 때
+      </strong>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto 1fr', gap: '7px', alignItems: 'center', fontSize: '13px' }}>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(14, 165, 233, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>1페이지 성공</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>page 1 cache</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px dashed rgba(14, 165, 233, 0.65)', borderRadius: '8px', textAlign: 'center', background: 'rgba(14, 165, 233, 0.08)' }}>
+          <strong>2페이지 요청 중</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>placeholder 표시</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(239, 68, 68, 0.55)', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>2페이지 실패</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>성공 데이터 없음</small>
+        </div>
+        <span style={{ opacity: 0.55 }}>→</span>
+        <div style={{ padding: '10px 6px', border: '1px solid rgba(239, 68, 68, 0.55)', borderRadius: '8px', textAlign: 'center', background: 'rgba(239, 68, 68, 0.08)' }}>
+          <strong>목록 사라짐</strong>
+          <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>영역 에러</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption style={{ marginTop: '12px', textAlign: 'center', fontSize: '14px', opacity: 0.7 }}>
+    화면에는 같은 이전 데이터처럼 보였지만 저장 위치와 수명이 달랐다.
+  </figcaption>
+</figure>
+
+### 정책을 캐시 기준으로 다시 썼다
+
+문제는 라이브러리의 동작이 아니라, 그 동작을 잘못 가정한 설계 문서에 있었다.
+
+```text
+이전 데이터가 있으면 화면을 유지한다.
+```
+
+가 아니라,
+
+```text
+현재 queryKey의 캐시에 실제 성공 데이터가 남아 있으면
+화면을 유지하고 갱신 실패 배너를 보여준다.
+```
+
+마지막 성공 데이터를 별도로 저장하면 페이지 전환 실패 뒤에도 1페이지를 계속 보여줄 수 있다. 하지만 주소는 `page=2`인데 화면은 1페이지인 상태를 따로 설명하고 관리해야 한다.
+
+이번에는 그 복잡성을 추가하지 않았다. 검색과 필터는 그대로 두고, 목록 영역에 에러와 다시 시도 버튼을 보여주기로 했다. 에러 화면이 나온 것보다 문제였던 건 `placeholderData`가 보장하지 않는 동작을 설계 문서에서 약속하고 있었다는 점이었다.
+
+## 폴더 구조를 바꾸는 일도 책임을 나누는 일이었다
+
+FSD 전환을 간단한 폴더 정리라고 생각했지만, 막상 해보니 폴더 이름보다 왜 이렇게 나누는지를 더 오래 고민했다.
+
+헤더는 widget과 layout 중 어디에 둬야 할까. 통합 store 때문에 생긴 결합은 어디에서 감수해야 할까. 조회 실패는 Error Boundary와 콘텐츠 중 누가 맡아야 할까. 답을 내려면 각 코드가 무엇을 알고 있고, 어떤 코드와 함께 바뀌는지부터 봐야 했다.
+
+FSD는 import 방향과 레이어의 역할이라는 기준을 준다. 그렇다고 파일 위치가 자동으로 정해지지는 않는다. 같은 상품 카드 조합도 누군가는 widget으로 올리고, 누군가는 page에 남길 수 있다. 통합 store 역시 FSD 규칙과 Zustand 패턴 중 무엇을 더 챙기느냐에 따라 답이 달라진다. 프로젝트가 커지면 지금 내린 답이 바뀔 수도 있다.
+
+처음에는 이런 모호함이 내가 문서를 덜 이해해서 생긴다고 생각했다. 후보를 하나씩 비교해보니 꼭 그런 건 아니었다. 모호한 곳에서 무엇을 묶고 어디를 가를지 정하는 것 자체가 설계였다.
+
+이번에 고른 폴더 트리가 FSD의 정답이라고 생각하지는 않는다. 다만 왜 이 경계를 골랐는지, 그러면서 무엇을 포기했는지는 전보다 잘 설명할 수 있게 됐다.
+
+폴더를 옮기는 과제였는데 돌이켜보면 책임과 경계를 나누는 연습을 한 주였다.
+
+## 참고
+
+- [Feature-Sliced Design — Layers](https://feature-sliced.design/docs/reference/layers)
+- [Feature-Sliced Design — Public API](https://feature-sliced.design/docs/reference/public-api)
+- [Zustand — Flux inspired practice](https://zustand.docs.pmnd.rs/learn/guides/flux-inspired-practice)
+- [Zustand — Slices Pattern](https://zustand.docs.pmnd.rs/learn/guides/slices-pattern)
+- [TanStack Query — Important Defaults](https://tanstack.com/query/v5/docs/framework/react/guides/important-defaults)
+- [TanStack Query — Placeholder Query Data](https://tanstack.com/query/v5/docs/framework/react/guides/placeholder-query-data)
+- [TanStack Query — Paginated Queries](https://tanstack.com/query/v5/docs/framework/react/guides/paginated-queries)
+- [TanStack Query v5.101.2 — QueryObserver source](https://github.com/TanStack/query/blob/%40tanstack%2Fquery-core%405.101.2/packages/query-core/src/queryObserver.ts)
