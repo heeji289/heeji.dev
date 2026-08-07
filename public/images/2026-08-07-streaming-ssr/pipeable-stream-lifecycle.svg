@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="790" viewBox="0 0 1100 790" role="img" aria-labelledby="title desc">
+  <title id="title">renderToPipeableStream 코드와 각 지점에서 이어지는 동작</title>
+  <desc id="desc">왼쪽의 renderToPipeableStream 코드에서 호출, onShellReady, pipe, Promise 완료, onAllReady를 오른쪽의 서버 렌더링 시작, Shell 준비, 응답 전송 시작, 실제 콘텐츠 자동 추가, 전체 렌더링 완료 알림과 각각 연결한다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 750; }
+      .heading { font-size: 18px; font-weight: 750; }
+      .code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 17px; fill: #f8fafc; }
+      .line { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 13px; fill: #7f8da3; }
+      .event { font-size: 18px; font-weight: 750; }
+      .sub { font-size: 15px; font-weight: 500; fill: #64748b; }
+      .internal { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 15px; font-weight: 700; fill: #a7d6b4; }
+      .arrow { fill: none; stroke: #64748b; stroke-width: 2.5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1100" height="790" rx="24" fill="#fbfaf7"/>
+  <text class="title" x="550" y="50" text-anchor="middle">코드의 각 지점에서 어떤 행동이 이어질까?</text>
+
+  <text class="heading" x="264" y="88" text-anchor="middle">renderToPipeableStream 코드</text>
+  <text class="heading" x="825" y="88" text-anchor="middle">서버에서 이어지는 행동</text>
+
+  <rect x="38" y="106" width="452" height="604" rx="20" fill="#172033"/>
+  <circle cx="65" cy="131" r="5" fill="#df6c68"/>
+  <circle cx="83" cy="131" r="5" fill="#d9a441"/>
+  <circle cx="101" cy="131" r="5" fill="#65a872"/>
+
+  <rect x="57" y="156" width="413" height="58" rx="10" fill="#263a51"/>
+  <text class="line" x="69" y="190">1</text>
+  <text class="code" x="94" y="190">renderToPipeableStream(&lt;App /&gt;, {</text>
+
+  <rect x="73" y="254" width="397" height="58" rx="10" fill="#2a4052"/>
+  <text class="line" x="69" y="288">2</text>
+  <text class="code" x="110" y="288">onShellReady() {</text>
+
+  <rect x="89" y="352" width="381" height="58" rx="10" fill="#2d4a46"/>
+  <text class="line" x="69" y="386">3</text>
+  <text class="code" x="126" y="386">pipe(response);</text>
+
+  <text class="line" x="69" y="436">4</text>
+  <text class="code" x="110" y="436">},</text>
+
+  <rect x="57" y="450" width="413" height="50" rx="10" fill="#25372f" stroke="#68a57b" stroke-width="2" stroke-dasharray="7 6"/>
+  <text class="internal" x="264" y="481" text-anchor="middle">Promise 완료 · React 내부 처리</text>
+
+  <rect x="73" y="528" width="397" height="58" rx="10" fill="#40334b"/>
+  <text class="line" x="69" y="562">5</text>
+  <text class="code" x="110" y="562">onAllReady() {</text>
+  <text class="line" x="69" y="610">6</text>
+  <text class="code" x="126" y="610">// 전체 렌더링 완료</text>
+  <text class="line" x="69" y="650">7</text>
+  <text class="code" x="110" y="650">},</text>
+  <text class="line" x="69" y="687">8</text>
+  <text class="code" x="94" y="687">});</text>
+
+  <path class="arrow" d="M470 185 C515 185 519 162 558 162"/>
+  <rect x="570" y="119" width="490" height="86" rx="18" fill="#e4f0f9" stroke="#5e9cc7" stroke-width="2"/>
+  <text class="event" x="595" y="151">React 서버 렌더링 시작</text>
+  <text class="sub" x="595" y="178">함수를 호출하는 순간 렌더링이 시작된다.</text>
+
+  <path class="arrow" d="M470 283 C515 283 519 260 558 260"/>
+  <rect x="570" y="217" width="490" height="86" rx="18" fill="#e4f0f9" stroke="#5e9cc7" stroke-width="2"/>
+  <text class="event" x="595" y="249">Shell 준비 완료 알림</text>
+  <text class="sub" x="595" y="276">fallback을 포함한 Shell이 준비되면 호출된다.</text>
+
+  <path class="arrow" d="M470 381 C515 381 519 358 558 358"/>
+  <rect x="570" y="315" width="490" height="86" rx="18" fill="#e5f3e9" stroke="#5a9c70" stroke-width="2"/>
+  <text class="event" x="595" y="347">HTTP 응답에 연결하고 전송 시작</text>
+  <text class="sub" x="595" y="374">Shell과 fallback이 열린 응답으로 나가기 시작한다.</text>
+
+  <path d="M470 475 C515 475 519 466 558 466" fill="none" stroke="#5a9c70" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+  <rect x="570" y="417" width="490" height="98" rx="18" fill="#e5f3e9" stroke="#5a9c70" stroke-width="2" stroke-dasharray="7 6"/>
+  <text class="event" x="595" y="449">보류한 Suspense 경계 렌더링 재개</text>
+  <text class="sub" x="595" y="476">실제 HTML과 교체 script를 같은 응답에 이어 쓴다.</text>
+  <text x="1035" y="494" text-anchor="end" font-size="13" font-weight="750" fill="#4f8e63">React가 자동 처리</text>
+
+  <path class="arrow" d="M470 557 C515 557 519 574 558 574"/>
+  <rect x="570" y="531" width="490" height="100" rx="18" fill="#f4edf6" stroke="#a06cad" stroke-width="2"/>
+  <text class="event" x="595" y="563">모든 경계의 렌더링 완료 알림</text>
+  <text class="sub" x="595" y="590">완성된 HTML을 보내는 함수가 아니라,</text>
+  <text class="sub" x="595" y="614">전체 렌더링이 끝났음을 알려주는 콜백이다.</text>
+
+  <path d="M815 631 V662" fill="none" stroke="#ad7a39" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <rect x="570" y="674" width="490" height="52" rx="26" fill="#f6ead9" stroke="#c28a43" stroke-width="2"/>
+  <text x="815" y="707" text-anchor="middle" font-size="17" font-weight="750" fill="#8c612d">남은 출력이 전송되면 HTTP 응답 종료</text>
+
+  <text class="sub" x="550" y="764" text-anchor="middle">핵심: pipe는 전송을 시작하고, onAllReady는 전체 렌더링 완료를 알린다.</text>
+</svg>

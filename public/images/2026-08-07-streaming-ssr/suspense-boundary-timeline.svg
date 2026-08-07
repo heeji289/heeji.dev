@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600" role="img" aria-labelledby="title desc">
+  <title id="title">여러 Suspense 경계가 준비된 순서대로 공개되는 타임라인</title>
+  <desc id="desc">A는 3초, B는 1초, C는 2초에 완료된다. 처음에는 모두 Skeleton이고 B, C, A 순서로 각자의 원래 위치에서 실제 콘텐츠로 교체된다.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 750; }
+      .row { font-size: 21px; font-weight: 750; }
+      .bar-label { font-size: 16px; font-weight: 700; }
+      .tick { font-size: 15px; font-weight: 600; fill: #64748b; }
+      .sub { font-size: 16px; font-weight: 500; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="600" rx="24" fill="#fbfaf7"/>
+  <text class="title" x="500" y="54" text-anchor="middle">여러 경계는 서로 기다리지 않고 준비된 순서대로 공개된다</text>
+
+  <line x1="220" y1="116" x2="920" y2="116" stroke="#a6b0bc" stroke-width="2"/>
+  <line x1="220" y1="108" x2="220" y2="498" stroke="#d2d8df" stroke-width="2"/>
+  <line x1="420" y1="108" x2="420" y2="498" stroke="#d2d8df" stroke-width="2" stroke-dasharray="5 6"/>
+  <line x1="620" y1="108" x2="620" y2="498" stroke="#d2d8df" stroke-width="2" stroke-dasharray="5 6"/>
+  <line x1="820" y1="108" x2="820" y2="498" stroke="#d2d8df" stroke-width="2" stroke-dasharray="5 6"/>
+  <line x1="920" y1="108" x2="920" y2="498" stroke="#d2d8df" stroke-width="2"/>
+  <text class="tick" x="220" y="100" text-anchor="middle">0초</text>
+  <text class="tick" x="420" y="100" text-anchor="middle">1초</text>
+  <text class="tick" x="620" y="100" text-anchor="middle">2초</text>
+  <text class="tick" x="820" y="100" text-anchor="middle">3초</text>
+
+  <text class="row" x="92" y="199">경계 A</text>
+  <text class="sub" x="92" y="225">3초 소요</text>
+  <rect x="220" y="170" width="600" height="72" rx="16" fill="#eadff0" stroke="#a06cad" stroke-width="2"/>
+  <text class="bar-label" x="520" y="213" text-anchor="middle" fill="#704979">A Skeleton</text>
+  <rect x="820" y="170" width="100" height="72" rx="16" fill="#dcecdf" stroke="#5a9c70" stroke-width="2"/>
+  <text class="bar-label" x="870" y="201" text-anchor="middle" fill="#376b48">A</text>
+  <text class="bar-label" x="870" y="222" text-anchor="middle" fill="#376b48">Content</text>
+
+  <text class="row" x="92" y="327">경계 B</text>
+  <text class="sub" x="92" y="353">1초 소요</text>
+  <rect x="220" y="298" width="200" height="72" rx="16" fill="#eadff0" stroke="#a06cad" stroke-width="2"/>
+  <text class="bar-label" x="320" y="341" text-anchor="middle" fill="#704979">B Skeleton</text>
+  <rect x="420" y="298" width="500" height="72" rx="16" fill="#dcecdf" stroke="#5a9c70" stroke-width="2"/>
+  <text class="bar-label" x="670" y="341" text-anchor="middle" fill="#376b48">B Content</text>
+
+  <text class="row" x="92" y="455">경계 C</text>
+  <text class="sub" x="92" y="481">2초 소요</text>
+  <rect x="220" y="426" width="400" height="72" rx="16" fill="#eadff0" stroke="#a06cad" stroke-width="2"/>
+  <text class="bar-label" x="420" y="469" text-anchor="middle" fill="#704979">C Skeleton</text>
+  <rect x="620" y="426" width="300" height="72" rx="16" fill="#dcecdf" stroke="#5a9c70" stroke-width="2"/>
+  <text class="bar-label" x="770" y="469" text-anchor="middle" fill="#376b48">C Content</text>
+
+  <rect x="258" y="531" width="484" height="38" rx="19" fill="#e8eef3"/>
+  <text x="500" y="556" text-anchor="middle" font-size="17" font-weight="750" fill="#465466">완료 순서 B → C → A · 각 경계는 원래 자리에서 교체</text>
+</svg>

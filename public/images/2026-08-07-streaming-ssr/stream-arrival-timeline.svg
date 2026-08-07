@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="430" viewBox="0 0 1000 430" role="img" aria-labelledby="title desc">
+  <title id="title">Shell과 실제 콘텐츠의 도착 시간</title>
+  <desc id="desc">같은 fetch 문서 응답에서 0.05초에 Shell과 fallback이 도착하고 10.09초에 실제 상품 목록이 도착한 뒤 10.10초에 스트림이 종료된다.</desc>
+  <defs>
+    <filter id="shadow" x="-12%" y="-24%" width="124%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity=".1"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 750; }
+      .event { font-size: 20px; font-weight: 750; }
+      .time { font-size: 19px; font-weight: 750; }
+      .sub { font-size: 16px; font-weight: 500; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="430" rx="24" fill="#fbfaf7"/>
+  <text class="title" x="500" y="55" text-anchor="middle">같은 응답에서 두 화면이 다른 시점에 도착했다</text>
+
+  <line x1="112" y1="238" x2="888" y2="238" stroke="#8b98a8" stroke-width="5" stroke-linecap="round"/>
+  <line x1="116" y1="238" x2="876" y2="238" stroke="#77a98a" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 12"/>
+
+  <circle cx="116" cy="238" r="17" fill="#4d8fba"/>
+  <line x1="116" y1="221" x2="116" y2="154" stroke="#4d8fba" stroke-width="3"/>
+  <rect x="44" y="92" width="298" height="70" rx="16" fill="#e4f0f9" stroke="#5e9cc7" stroke-width="2" filter="url(#shadow)"/>
+  <text class="event" x="193" y="121" text-anchor="middle">Shell + fallback</text>
+  <text class="sub" x="193" y="146" text-anchor="middle">22,930 bytes</text>
+  <rect x="68" y="270" width="96" height="36" rx="18" fill="#4d8fba"/>
+  <text class="time" x="116" y="294" text-anchor="middle" fill="#ffffff">0.05초</text>
+
+  <circle cx="876" cy="238" r="17" fill="#4f8e63"/>
+  <line x1="876" y1="221" x2="876" y2="154" stroke="#4f8e63" stroke-width="3"/>
+  <rect x="654" y="92" width="302" height="70" rx="16" fill="#e5f3e9" stroke="#5a9c70" stroke-width="2" filter="url(#shadow)"/>
+  <text class="event" x="805" y="121" text-anchor="middle">상품 목록 콘텐츠</text>
+  <text class="sub" x="805" y="146" text-anchor="middle">3,928 bytes</text>
+  <rect x="823" y="270" width="106" height="36" rx="18" fill="#4f8e63"/>
+  <text class="time" x="876" y="294" text-anchor="middle" fill="#ffffff">10.09초</text>
+
+  <line x1="888" y1="238" x2="888" y2="338" stroke="#526173" stroke-width="2" stroke-dasharray="5 5"/>
+  <text class="sub" x="888" y="364" text-anchor="middle">10.10초 스트림 종료</text>
+
+  <rect x="282" y="194" width="430" height="34" rx="17" fill="#eef1f4"/>
+  <text x="497" y="217" text-anchor="middle" font-size="17" font-weight="700" fill="#526173">약 10초 동안 문서 응답은 열린 상태</text>
+
+  <text class="sub" x="500" y="402" text-anchor="middle">새 요청 없이 최초 /fetch 문서 응답에 실제 콘텐츠가 이어졌다</text>
+</svg>

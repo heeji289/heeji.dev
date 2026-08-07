@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" role="img" aria-labelledby="title desc">
+  <title id="title">Chrome Network Timing에서 본 Streaming SSR 응답</title>
+  <desc id="desc">Waiting for server response는 약 69밀리초로 짧고 Content Download는 약 10초로 길어, 첫 바이트가 빠르게 도착한 뒤 같은 문서 응답이 계속 다운로드되는 모습을 보여준다.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 750; }
+      .label { font-size: 19px; font-weight: 700; }
+      .value { font-size: 18px; font-weight: 750; }
+      .sub { font-size: 16px; font-weight: 500; fill: #64748b; }
+      .tick { font-size: 14px; font-weight: 500; fill: #788596; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="420" rx="24" fill="#fbfaf7"/>
+  <text class="title" x="500" y="54" text-anchor="middle">첫 바이트는 빨랐지만 다운로드는 10초간 이어졌다</text>
+
+  <text class="label" x="52" y="131">Waiting</text>
+  <text class="sub" x="52" y="155">서버 응답 대기</text>
+  <rect x="260" y="111" width="676" height="48" rx="12" fill="#edf0f3"/>
+  <rect x="260" y="111" width="8" height="48" rx="4" fill="#4d8fba"/>
+  <circle cx="268" cy="135" r="8" fill="#4d8fba"/>
+  <path d="M268 105 V88 H376" stroke="#4d8fba" stroke-width="2" fill="none"/>
+  <text class="value" x="386" y="94">69.38ms</text>
+
+  <text class="label" x="52" y="232">Content Download</text>
+  <text class="sub" x="52" y="256">응답 본문 수신</text>
+  <rect x="260" y="212" width="676" height="48" rx="12" fill="#edf0f3"/>
+  <rect x="268" y="212" width="668" height="48" rx="12" fill="#73a483"/>
+  <text class="value" x="602" y="243" text-anchor="middle" fill="#ffffff">10.07s</text>
+
+  <line x1="260" y1="288" x2="936" y2="288" stroke="#a6b0bc" stroke-width="2"/>
+  <line x1="260" y1="282" x2="260" y2="294" stroke="#a6b0bc" stroke-width="2"/>
+  <line x1="598" y1="282" x2="598" y2="294" stroke="#a6b0bc" stroke-width="2"/>
+  <line x1="936" y1="282" x2="936" y2="294" stroke="#a6b0bc" stroke-width="2"/>
+  <text class="tick" x="260" y="316" text-anchor="middle">0초</text>
+  <text class="tick" x="598" y="316" text-anchor="middle">5초</text>
+  <text class="tick" x="936" y="316" text-anchor="middle">10초</text>
+
+  <rect x="170" y="346" width="660" height="44" rx="22" fill="#e8eef3"/>
+  <text x="500" y="374" text-anchor="middle" font-size="18" font-weight="700" fill="#465466">TTFB 이후에도 같은 문서 응답의 본문이 계속 도착했다</text>
+</svg>

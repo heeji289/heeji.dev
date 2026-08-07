@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="780" viewBox="0 0 1000 780" role="img" aria-labelledby="title desc">
+  <title id="title">Next.js 서버와 브라우저 사이의 Streaming SSR 시퀀스</title>
+  <desc id="desc">브라우저가 문서를 요청하면 서버가 Shell과 fallback을 먼저 보내고, 브라우저가 이를 파싱해 Skeleton을 표시한다. 데이터가 준비되면 서버가 실제 HTML과 교체 스크립트를 보내며 브라우저가 스크립트를 실행해 DOM을 교체한 뒤 응답이 종료된다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#526173"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 750; }
+      .actor { font-size: 22px; font-weight: 750; }
+      .event { font-size: 18px; font-weight: 700; }
+      .sub { font-size: 15px; font-weight: 500; fill: #64748b; }
+      .message { stroke: #526173; stroke-width: 3; marker-end: url(#arrow); }
+      .life { stroke: #9aa6b4; stroke-width: 2.5; stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="780" rx="24" fill="#fbfaf7"/>
+  <text class="title" x="500" y="52" text-anchor="middle">같은 HTTP 응답 안에서 화면이 두 단계로 완성된다</text>
+
+  <rect x="105" y="86" width="290" height="62" rx="18" fill="#e4f0f9" stroke="#5e9cc7" stroke-width="2.5"/>
+  <text class="actor" x="250" y="124" text-anchor="middle">Next.js 서버</text>
+  <rect x="605" y="86" width="290" height="62" rx="18" fill="#e5f3e9" stroke="#5a9c70" stroke-width="2.5"/>
+  <text class="actor" x="750" y="124" text-anchor="middle">브라우저</text>
+
+  <line class="life" x1="250" y1="148" x2="250" y2="724"/>
+  <line class="life" x1="750" y1="148" x2="750" y2="724"/>
+  <path d="M55 174 V700" stroke="#a6b0bc" stroke-width="2" marker-end="url(#arrow)"/>
+  <text class="sub" x="55" y="158" text-anchor="middle">시간</text>
+
+  <line class="message" x1="735" y1="190" x2="267" y2="190"/>
+  <text class="event" x="500" y="178" text-anchor="middle">최초 문서 요청</text>
+
+  <line class="message" x1="267" y1="278" x2="735" y2="278"/>
+  <text class="event" x="500" y="264" text-anchor="middle">Shell + fallback</text>
+  <text class="sub" x="500" y="301" text-anchor="middle">HTTP 응답은 종료하지 않음</text>
+
+  <rect x="625" y="326" width="250" height="92" rx="18" fill="#eef7f1" stroke="#64a278" stroke-width="2"/>
+  <text class="event" x="750" y="356" text-anchor="middle">HTML 파싱</text>
+  <text class="sub" x="750" y="382" text-anchor="middle">fallback DOM 생성</text>
+  <text class="sub" x="750" y="404" text-anchor="middle">Skeleton 표시</text>
+
+  <rect x="125" y="338" width="250" height="68" rx="18" fill="#f4edf6" stroke="#a06cad" stroke-width="2"/>
+  <text class="event" x="250" y="366" text-anchor="middle">데이터 조회 중</text>
+  <text class="sub" x="250" y="390" text-anchor="middle">응답은 열린 상태</text>
+
+  <line class="message" x1="267" y1="478" x2="735" y2="478"/>
+  <text class="event" x="500" y="464" text-anchor="middle">실제 HTML + 교체 &lt;script&gt;</text>
+  <text class="sub" x="500" y="501" text-anchor="middle">같은 문서 응답에 이어서 전송</text>
+
+  <rect x="604" y="528" width="292" height="126" rx="18" fill="#e5f3e9" stroke="#5a9c70" stroke-width="2.5"/>
+  <text class="event" x="750" y="560" text-anchor="middle">교체 script 실행</text>
+  <text class="sub" x="750" y="588" text-anchor="middle">fallback DOM → 실제 콘텐츠 DOM</text>
+  <text class="sub" x="750" y="614" text-anchor="middle">style 계산 · layout · paint</text>
+  <rect x="684" y="626" width="132" height="24" rx="12" fill="#cfe6d6"/>
+  <text x="750" y="643" text-anchor="middle" font-size="13" font-weight="750" fill="#376b48">화면 교체 완료</text>
+
+  <line x1="267" y1="690" x2="735" y2="690" stroke="#526173" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+  <text class="event" x="500" y="678" text-anchor="middle">HTTP 응답 종료</text>
+
+  <text class="sub" x="500" y="750" text-anchor="middle">브라우저의 추가 문서 요청 없이 하나의 응답이 끝까지 이어진다</text>
+</svg>
