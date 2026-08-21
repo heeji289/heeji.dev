@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">15개 검증 항목의 테스트 책임 지도</title>
+  <desc id="desc">단위 테스트 3개는 규칙과 경계값, 통합 테스트 8개는 모듈 연결과 화면 결과, E2E 테스트 4개는 실제 브라우저 동작을 검증한다.</desc>
+  <defs>
+    <filter id="shadow" x="-15%" y="-20%" width="130%" height="150%">
+      <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1e293b" flood-opacity=".08"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .count { font-size: 52px; font-weight: 800; }
+      .label { font-size: 23px; font-weight: 750; }
+      .body { font-size: 17px; font-weight: 600; }
+      .sub { font-size: 15px; font-weight: 500; fill: #64748b; }
+      .card { filter: url(#shadow); stroke-width: 2.5; }
+    </style>
+  </defs>
+  <rect width="1200" height="820" rx="28" fill="#fbfaf7"/>
+  <text class="title" x="600" y="58" text-anchor="middle">15개 동작을 “실패했을 때 알 수 있는 것”으로 나눴다</text>
+  <rect class="card" x="70" y="130" width="320" height="548" rx="26" fill="#e9f3ee" stroke="#65a17c"/>
+  <text class="count" x="230" y="206" text-anchor="middle" fill="#3f7760">3</text>
+  <text class="label" x="230" y="244" text-anchor="middle">단위 테스트</text>
+  <text class="sub" x="230" y="277" text-anchor="middle">규칙과 경계값</text>
+  <rect x="102" y="316" width="256" height="68" rx="14" fill="#ffffff" stroke="#91bda1" stroke-width="2"/>
+  <text class="body" x="230" y="346" text-anchor="middle">장바구니와 위시리스트</text>
+  <text class="sub" x="230" y="369" text-anchor="middle">추가와 제거, 개수</text>
+  <rect x="102" y="402" width="256" height="68" rx="14" fill="#ffffff" stroke="#91bda1" stroke-width="2"/>
+  <text class="body" x="230" y="432" text-anchor="middle">URL 조건 → query key</text>
+  <text class="sub" x="230" y="455" text-anchor="middle">기본값, 정규화, 잘못된 값</text>
+  <rect x="102" y="488" width="256" height="68" rx="14" fill="#ffffff" stroke="#91bda1" stroke-width="2"/>
+  <text class="body" x="230" y="518" text-anchor="middle">countTotalPages()</text>
+  <text class="sub" x="230" y="541" text-anchor="middle">0건, 나머지, 마지막 페이지</text>
+  <rect x="122" y="610" width="216" height="32" rx="16" fill="#cfe6d7"/>
+  <text x="230" y="632" text-anchor="middle" font-size="14" font-weight="750" fill="#376b48">가장 좁고 빠른 피드백</text>
+  <rect class="card" x="440" y="130" width="320" height="548" rx="26" fill="#edf3f8" stroke="#6496b8"/>
+  <text class="count" x="600" y="206" text-anchor="middle" fill="#3e718f">8</text>
+  <text class="label" x="600" y="244" text-anchor="middle">통합 테스트</text>
+  <text class="sub" x="600" y="277" text-anchor="middle">모듈 연결과 화면 결과</text>
+  <rect x="472" y="316" width="256" height="68" rx="14" fill="#ffffff" stroke="#8bafc7" stroke-width="2"/>
+  <text class="body" x="600" y="346" text-anchor="middle">로딩, 빈 결과, 에러</text>
+  <text class="sub" x="600" y="369" text-anchor="middle">재시도 후 복구</text>
+  <rect x="472" y="402" width="256" height="68" rx="14" fill="#ffffff" stroke="#8bafc7" stroke-width="2"/>
+  <text class="body" x="600" y="432" text-anchor="middle">카테고리, 정렬, 페이지</text>
+  <text class="sub" x="600" y="455" text-anchor="middle">새 요청과 목록 변경</text>
+  <rect x="472" y="488" width="256" height="68" rx="14" fill="#ffffff" stroke="#8bafc7" stroke-width="2"/>
+  <text class="body" x="600" y="518" text-anchor="middle">스토어 → 헤더</text>
+  <text class="sub" x="600" y="541" text-anchor="middle">구독과 리렌더링</text>
+  <rect x="492" y="610" width="216" height="32" rx="16" fill="#d7e7f2"/>
+  <text x="600" y="632" text-anchor="middle" font-size="14" font-weight="750" fill="#366885">사용자가 보는 결과까지</text>
+  <rect class="card" x="810" y="130" width="320" height="548" rx="26" fill="#f4edf6" stroke="#a06cad"/>
+  <text class="count" x="970" y="206" text-anchor="middle" fill="#81518c">4</text>
+  <text class="label" x="970" y="244" text-anchor="middle">E2E 테스트</text>
+  <text class="sub" x="970" y="277" text-anchor="middle">실제 브라우저가 필요한 동작</text>
+  <rect x="842" y="316" width="256" height="68" rx="14" fill="#ffffff" stroke="#b68ac0" stroke-width="2"/>
+  <text class="body" x="970" y="346" text-anchor="middle">조작 → URL 반영과 재진입</text>
+  <text class="sub" x="970" y="369" text-anchor="middle">실제 주소 복원</text>
+  <rect x="842" y="402" width="256" height="68" rx="14" fill="#ffffff" stroke="#b68ac0" stroke-width="2"/>
+  <text class="body" x="970" y="432" text-anchor="middle">뒤로 가기와 앞으로 가기</text>
+  <text class="sub" x="970" y="455" text-anchor="middle">브라우저 히스토리</text>
+  <rect x="842" y="488" width="256" height="68" rx="14" fill="#ffffff" stroke="#b68ac0" stroke-width="2"/>
+  <text class="body" x="970" y="518" text-anchor="middle">새로고침과 전체 흐름</text>
+  <text class="sub" x="970" y="541" text-anchor="middle">문서 요청과 상태 유지</text>
+  <rect x="862" y="610" width="216" height="32" rx="16" fill="#e8d9eb"/>
+  <text x="970" y="632" text-anchor="middle" font-size="14" font-weight="750" fill="#74447f">대체하기 어려운 경로만</text>
+  <line x1="132" y1="734" x2="1068" y2="734" stroke="#9aa6b4" stroke-width="3"/>
+  <circle cx="132" cy="734" r="7" fill="#4f8e63"/>
+  <circle cx="600" cy="734" r="7" fill="#4d8fba"/>
+  <circle cx="1068" cy="734" r="7" fill="#8f5f9b"/>
+  <text class="sub" x="132" y="770" text-anchor="middle">빠르고 원인이 좁음</text>
+  <text class="sub" x="1068" y="770" text-anchor="middle">실제 환경과 가까움</text>
+</svg>

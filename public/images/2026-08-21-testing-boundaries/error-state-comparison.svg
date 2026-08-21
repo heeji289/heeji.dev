@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">상품 목록 조회 실패의 세 가지 화면 상태</title>
+  <desc id="desc">최초 조회 실패는 전체 에러 화면, 같은 조건 재조회 실패는 이전 목록과 에러 배너, 수정 전 조건 변경 후 실패는 예상과 달리 이전 목록이 사라진 전체 에러 화면을 보여준다.</desc>
+  <defs>
+    <filter id="shadow" x="-15%" y="-20%" width="130%" height="150%">
+      <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1e293b" flood-opacity=".08"/>
+    </filter>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .step { font-size: 21px; font-weight: 750; }
+      .label { font-size: 17px; font-weight: 700; }
+      .sub { font-size: 14px; font-weight: 500; fill: #64748b; }
+      .card { filter: url(#shadow); stroke-width: 2.5; }
+    </style>
+  </defs>
+  <rect width="1200" height="760" rx="28" fill="#fbfaf7"/>
+  <text class="title" x="600" y="58" text-anchor="middle">같은 “조회 실패”도 이전 데이터에 따라 화면이 달라졌다</text>
+  <rect class="card" x="58" y="124" width="336" height="504" rx="26" fill="#f5f3ee" stroke="#aaa49a"/>
+  <circle cx="100" cy="170" r="22" fill="#aaa49a"/>
+  <text x="100" y="177" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="800" fill="#ffffff">1</text>
+  <text class="step" x="136" y="177">최초 조회 실패</text>
+  <rect x="88" y="222" width="276" height="328" rx="18" fill="#ffffff" stroke="#d6d1c8" stroke-width="2"/>
+  <rect x="112" y="246" width="96" height="15" rx="7" fill="#d8d4cc"/>
+  <rect x="112" y="275" width="228" height="12" rx="6" fill="#ece9e2"/>
+  <circle cx="226" cy="368" r="38" fill="#f4d5d2"/>
+  <path d="M214 356 L238 380 M238 356 L214 380" stroke="#9b5f58" stroke-width="5" stroke-linecap="round"/>
+  <text class="label" x="226" y="430" text-anchor="middle">전체 에러 화면</text>
+  <text class="sub" x="226" y="458" text-anchor="middle">보여줄 데이터가 없음</text>
+  <rect x="166" y="482" width="120" height="34" rx="17" fill="#e8e5de"/>
+  <text class="sub" x="226" y="504" text-anchor="middle">다시 시도</text>
+  <rect x="106" y="578" width="240" height="30" rx="15" fill="#e8e5de"/>
+  <text x="226" y="599" text-anchor="middle" font-size="13" font-weight="750" fill="#625f59">의도한 동작</text>
+  <rect class="card" x="432" y="124" width="336" height="504" rx="26" fill="#e9f3ee" stroke="#65a17c"/>
+  <circle cx="474" cy="170" r="22" fill="#4f8e63"/>
+  <text x="474" y="177" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="800" fill="#ffffff">2</text>
+  <text class="step" x="510" y="177">같은 조건 재조회 실패</text>
+  <rect x="462" y="222" width="276" height="328" rx="18" fill="#ffffff" stroke="#8ab99b" stroke-width="2"/>
+  <rect x="478" y="242" width="244" height="56" rx="12" fill="#fbebea" stroke="#c9857d" stroke-width="1.5"/>
+  <circle cx="500" cy="270" r="10" fill="#c9857d"/>
+  <text class="sub" x="521" y="267">새 목록을 불러오지 못했어요</text>
+  <text x="521" y="286" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="650" fill="#9b5f58">다시 시도</text>
+  <g fill="#d7e7dc">
+    <rect x="478" y="318" width="112" height="88" rx="12"/>
+    <rect x="610" y="318" width="112" height="88" rx="12"/>
+    <rect x="478" y="422" width="112" height="88" rx="12"/>
+    <rect x="610" y="422" width="112" height="88" rx="12"/>
+  </g>
+  <g fill="#7eaa8e">
+    <rect x="488" y="382" width="66" height="8" rx="4"/>
+    <rect x="620" y="382" width="66" height="8" rx="4"/>
+    <rect x="488" y="486" width="66" height="8" rx="4"/>
+    <rect x="620" y="486" width="66" height="8" rx="4"/>
+  </g>
+  <rect x="480" y="578" width="240" height="30" rx="15" fill="#cfe6d7"/>
+  <text x="600" y="599" text-anchor="middle" font-size="13" font-weight="750" fill="#376b48">이전 목록 유지 + 배너</text>
+  <rect class="card" x="806" y="124" width="336" height="504" rx="26" fill="#fbebea" stroke="#c9857d"/>
+  <circle cx="848" cy="170" r="22" fill="#b7655d"/>
+  <text x="848" y="177" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="800" fill="#ffffff">3</text>
+  <rect x="1032" y="143" width="78" height="26" rx="13" fill="#f4d5d2"/>
+  <text x="1071" y="161" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="750" fill="#8d4b45">수정 전</text>
+  <text class="step" x="884" y="168">조건 변경 후</text>
+  <text class="step" x="884" y="194">조회 실패</text>
+  <rect x="836" y="222" width="276" height="328" rx="18" fill="#ffffff" stroke="#d7aaa4" stroke-width="2"/>
+  <rect x="860" y="246" width="96" height="15" rx="7" fill="#d8d4cc"/>
+  <rect x="860" y="275" width="228" height="12" rx="6" fill="#ece9e2"/>
+  <circle cx="974" cy="368" r="38" fill="#f4d5d2"/>
+  <path d="M962 356 L986 380 M986 356 L962 380" stroke="#9b5f58" stroke-width="5" stroke-linecap="round"/>
+  <text class="label" x="974" y="430" text-anchor="middle">이전 목록이 사라짐</text>
+  <text class="sub" x="974" y="458" text-anchor="middle">placeholderData가 유지되지 않음</text>
+  <rect x="914" y="482" width="120" height="34" rx="17" fill="#f1dfdd"/>
+  <text class="sub" x="974" y="504" text-anchor="middle">다시 시도</text>
+  <rect x="854" y="578" width="240" height="30" rx="15" fill="#f4d5d2"/>
+  <text x="974" y="599" text-anchor="middle" font-size="13" font-weight="750" fill="#8d4b45">테스트가 드러낸 빈틈</text>
+  <text class="sub" x="600" y="690" text-anchor="middle">에러 UI 한 건이 아니라 “이전에 보여줄 데이터가 있는가”까지 나눠서 봐야 했다</text>
+</svg>
