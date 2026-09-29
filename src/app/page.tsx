@@ -22,14 +22,14 @@ export default function HomePage() {
 
       {pinnedPosts.length > 0 && (
         <section className='space-y-3'>
-          <h3 className='text-base font-medium'>pinned posts</h3>
+          <h3 className='text-base font-medium'>Pinned posts</h3>
           <PostList posts={pinnedPosts} />
         </section>
       )}
 
       <section className='space-y-3'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-base font-medium'>recent posts</h3>
+          <h3 className='text-base font-medium'>Recent posts</h3>
           <Link
             href='/posts'
             className='text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'

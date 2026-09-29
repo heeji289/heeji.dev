@@ -21,31 +21,39 @@ export default function PostList({
   }
 
   return (
-    <ul className='divide-y divide-base-200 dark:divide-base-700'>
-      {posts.map((post) => {
-        const metaItems = [
-          post.date,
-          showTags ? post.tags.map((tag) => `#${tag}`).join(' ') : '',
-        ].filter(Boolean);
-
-        return (
-          <li key={post._meta.path} className='py-3'>
-            <Link
-              href={`/posts/${post._meta.path}`}
-              className='group block focus-visible:outline-none'
+    <ul className='space-y-1'>
+      {posts.map((post) => (
+        <li key={post._meta.path}>
+          <Link
+            href={`/posts/${post._meta.path}`}
+            className='group flex items-baseline gap-6 py-1.5 focus-visible:outline-none sm:items-center'
+          >
+            <time
+              dateTime={post.date}
+              className='w-16 shrink-0 text-sm tabular-nums text-base-600 dark:text-base-400'
             >
-              <h3 className='text-[15px] leading-6 text-base-900 underline-offset-4 group-hover:underline dark:text-base-50'>
-                {post.title}
-              </h3>
-              {metaItems.length > 0 && (
-                <p className='mt-1 line-clamp-1 text-xs text-base-500 dark:text-base-400'>
-                  {metaItems.join(' · ')}
-                </p>
-              )}
-            </Link>
-          </li>
-        );
-      })}
+              {post.date.slice(2).replaceAll('-', '.')}
+            </time>
+
+            <span className='min-w-0 flex-1 text-base-900 sm:truncate dark:text-base-50'>
+              {post.title}
+            </span>
+
+            {showTags && (
+              <span className='hidden shrink-0 gap-1.5 sm:flex'>
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className='rounded-md bg-base-100 px-1.5 py-0.5 text-xs text-base-600 dark:bg-base-700 dark:text-base-300'
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </span>
+            )}
+          </Link>
+        </li>
+      ))}
     </ul>
   );
 }

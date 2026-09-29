@@ -4,11 +4,11 @@ import { contacts } from '@/lib/contact';
 export default function ContactLinks() {
   return (
     <section className='space-y-3'>
-      <h3 className='text-base font-medium'>contact</h3>
+      <h3 className='text-base font-medium'>Contact</h3>
       <ul className='space-y-2 text-sm text-base-600 dark:text-base-300'>
         {contacts.map((contact) => (
           <li key={contact.label} className='flex flex-wrap items-center gap-2'>
-            <span className='w-[62px] lowercase text-base-500 dark:text-base-400'>
+            <span className='w-16 text-base-500 dark:text-base-400'>
               {contact.label}
             </span>
             <Link

@@ -17,13 +17,13 @@ export default function TagsPage() {
   });
 
   return (
-    <div className='space-y-8'>
-      <section className='space-y-2'>
-        <h2 className='text-2xl font-semibold'>tags</h2>
-        <p className='text-sm text-base-500 dark:text-base-400'>
-          총 {tags.length}개 태그
-        </p>
-      </section>
+    <div className='space-y-3'>
+      <h2 className='flex items-baseline gap-2 text-base font-medium'>
+        Tags
+        <span className='font-normal text-base-500 dark:text-base-400'>
+          {tags.length}
+        </span>
+      </h2>
 
       <ul className='space-y-2'>
         {tags.map(([tag, count]) => (

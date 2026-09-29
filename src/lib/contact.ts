@@ -1,16 +1,16 @@
 export const contacts = [
   {
-    label: 'github',
+    label: 'GitHub',
     value: 'github.com/heeji289',
     href: 'https://github.com/heeji289',
   },
   {
-    label: 'linkedin',
+    label: 'LinkedIn',
     value: 'linkedin.com/in/heeji289',
     href: 'https://www.linkedin.com/in/heeji289',
   },
   {
-    label: 'email',
+    label: 'Email',
     value: 'heeji289@gmail.com',
     href: 'mailto:heeji289@gmail.com',
   },

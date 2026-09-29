@@ -33,13 +33,13 @@ export default function TagDetailPage({params}: {params: Param}) {
   }
 
   return (
-    <div className='space-y-6'>
-      <section className='space-y-1'>
-        <h2 className='text-2xl font-semibold'>#{tag}</h2>
-        <p className='text-sm text-base-600 dark:text-base-300'>
-          총 {filteredPosts.length}개 글
-        </p>
-      </section>
+    <div className='space-y-3'>
+      <h2 className='flex items-baseline gap-2 text-base font-medium'>
+        #{tag}
+        <span className='font-normal text-base-500 dark:text-base-400'>
+          {filteredPosts.length}
+        </span>
+      </h2>
 
       <PostList posts={filteredPosts} showTags={false} />
     </div>

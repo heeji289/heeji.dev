@@ -9,13 +9,13 @@ export const metadata: Metadata = {
 
 export default function PostsPage() {
   return (
-    <div className='space-y-12'>
-      <header className='space-y-2'>
-        <h2 className='text-2xl font-semibold'>posts</h2>
-        <p className='text-sm text-base-500 dark:text-base-400'>
-          총 {posts.length}개 글
-        </p>
-      </header>
+    <div className='space-y-3'>
+      <h2 className='flex items-baseline gap-2 text-base font-medium'>
+        Posts
+        <span className='font-normal text-base-500 dark:text-base-400'>
+          {posts.length}
+        </span>
+      </h2>
 
       <PostList posts={posts} />
     </div>
