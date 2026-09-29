@@ -32,9 +32,9 @@ export default function HomePage() {
           <h3 className='text-base font-medium'>recent posts</h3>
           <Link
             href='/posts'
-            className='font-mono text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
+            className='text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
           >
-            all posts →
+            All posts →
           </Link>
         </div>
         <PostList posts={recentPosts} />

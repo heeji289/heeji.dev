@@ -7,6 +7,14 @@
     @apply rounded-md bg-base-100 px-1.5 py-0.5 text-sm font-normal dark:bg-base-700;
   }
 
+  .prose :is(h1, h2, h3) {
+    @apply scroll-mt-8;
+  }
+
+  .prose pre {
+    @apply dark:border dark:border-base-700;
+  }
+
   .prose :not(pre) > code::before,
   .prose :not(pre) > code::after {
     content: none;

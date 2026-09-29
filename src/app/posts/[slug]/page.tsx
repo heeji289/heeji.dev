@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Markdown from '@/components/Markdown';
 import Giscus from '@/components/Giscus';
+import TableOfContents from '@/components/TableOfContents';
 import { getPostBySlug, posts } from '@/lib/posts';
 
 type Param = {
@@ -48,13 +49,17 @@ export default function PostDetailPage({ params }: { params: Param }) {
   }
 
   return (
-    <article className='space-y-8'>
+    <article className='relative space-y-8'>
+      <aside className='absolute left-full top-0 ml-12 hidden h-full w-56 xl:block'>
+        <TableOfContents />
+      </aside>
+
       <header className='space-y-4 border-b border-base-200 pb-6 dark:border-base-700'>
         <Link
           href='/posts'
-          className='inline-flex items-center gap-1 font-mono text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
+          className='inline-flex items-center gap-1 text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
         >
-          ← posts
+          ← Posts
         </Link>
 
         <h1 className='text-3xl font-bold leading-tight'>{post.title}</h1>

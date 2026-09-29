@@ -1,7 +1,7 @@
 'use client';
 
 import { MDXContent } from '@content-collections/mdx/react';
-import { ReactNode } from 'react';
+import { isValidElement, ReactNode } from 'react';
 import ContentSection from './ContentSection';
 
 // TODO: Next Image로 변경
@@ -15,10 +15,25 @@ type HeadingProps = {
   children?: ReactNode;
 };
 
+const textOf = (node: ReactNode): string => {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join('');
+  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
+  return '';
+};
+
+// 같은 제목이 두 번 나오면 id가 겹친다. 그런 글이 생기면 번호를 붙인다.
+const slugify = (text: string) =>
+  text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w가-힣ㄱ-ㅎㅏ-ㅣ-]/g, '');
+
 const heading = (As: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') => {
   const Heading = ({ id, children }: HeadingProps) => (
     <div>
-      <As id={id}>{children}</As>
+      <As id={id ?? slugify(textOf(children))}>{children}</As>
     </div>
   );
   Heading.displayName = As;
