@@ -1,7 +1,7 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import {Metadata} from 'next';
+import {notFound} from 'next/navigation';
 import PostList from '@/components/PostList';
-import { getPostsByTag, getTagCountMap } from '@/lib/posts';
+import {getPostsByTag, getTagCountMap} from '@/lib/posts';
 
 type Param = {
   tag: string;
@@ -12,33 +12,36 @@ export async function generateMetadata({
 }: {
   params: Param;
 }): Promise<Metadata> {
+  const tag = decodeURIComponent(params.tag);
+
   return {
-    title: `#${params.tag} | heeji.dev`,
-    description: `${params.tag} 태그 글 목록`,
+    title: `#${tag} | heeji.dev`,
+    description: `${tag} 태그 글 목록`,
   };
 }
 
 export async function generateStaticParams() {
-  return Array.from(getTagCountMap().keys()).map((tag) => ({ tag }));
+  return Array.from(getTagCountMap().keys()).map((tag) => ({tag}));
 }
 
-export default function TagDetailPage({ params }: { params: Param }) {
-  const filteredPosts = getPostsByTag(params.tag);
+export default function TagDetailPage({params}: {params: Param}) {
+  const tag = decodeURIComponent(params.tag);
+  const filteredPosts = getPostsByTag(tag);
 
   if (filteredPosts.length === 0) {
     notFound();
   }
 
   return (
-    <div className='space-y-6'>
-      <section className='space-y-1'>
-        <h2 className='text-2xl font-semibold'>#{params.tag}</h2>
-        <p className='text-sm text-base-600 dark:text-base-300'>
-          총 {filteredPosts.length}개 글
-        </p>
-      </section>
+    <div className='space-y-3'>
+      <h2 className='flex items-baseline gap-2 text-base font-medium'>
+        #{tag}
+        <span className='font-normal text-base-500 dark:text-base-400'>
+          {filteredPosts.length}
+        </span>
+      </h2>
 
-      <PostList posts={filteredPosts} showType={false} showTags={false} />
+      <PostList posts={filteredPosts} showTags={false} />
     </div>
   );
 }

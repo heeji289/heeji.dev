@@ -14,12 +14,36 @@ const config = {
     extend: {
       colors: {
         primary: colors.teal,
-        base: colors.stone,
-        info: colors.sky,
+        background: '#ffffff',
+        base: {
+          50: '#f8f9fa',
+          100: '#f1f3f5',
+          200: '#e9ecef',
+          300: '#dee2e6',
+          400: '#adb5bd',
+          500: '#868e96',
+          600: '#495057',
+          700: '#343a40',
+          800: '#191919',
+          900: '#212529',
+        },
+        info: { 400: '#f8f9fa', 500: '#212529', 600: '#212529' },
         warn: colors.yellow,
         error: colors.red,
         success: colors.green,
       },
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
+        gray: {
+          css: {
+            '--tw-prose-body': theme('colors.base.900'),
+            '--tw-prose-headings': theme('colors.base.900'),
+            '--tw-prose-links': '#5167f4',
+            '--tw-prose-invert-body': theme('colors.base.50'),
+            '--tw-prose-invert-headings': theme('colors.base.50'),
+            '--tw-prose-invert-links': '#8bc3ff',
+          },
+        },
+      }),
       keyframes: {
         'caret-blink': {
           '0%, 49%': { opacity: '1' },
@@ -31,7 +55,7 @@ const config = {
       },
     },
     fontFamily: {
-      pretendard: ['Pretendard'],
+      pretendard: ['var(--font-pretendard)', 'sans-serif'],
       mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     },
   },

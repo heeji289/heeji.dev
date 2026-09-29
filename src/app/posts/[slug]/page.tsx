@@ -3,10 +3,12 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Markdown from '@/components/Markdown';
 import Giscus from '@/components/Giscus';
+import { CalendarIcon, ClockIcon } from '@/components/Icons';
+import TableOfContents from '@/components/TableOfContents';
 import {
-  POST_TYPE_LABEL,
+  formatDate,
   getPostBySlug,
-  inferPostType,
+  getReadingMinutes,
   posts,
 } from '@/lib/posts';
 
@@ -53,29 +55,35 @@ export default function PostDetailPage({ params }: { params: Param }) {
   }
 
   return (
-    <article className='space-y-8'>
-      <header className='space-y-4 border-b border-base-200 pb-6 dark:border-base-700'>
-        <Link
-          href='/posts'
-          className='inline-flex items-center gap-1 font-mono text-sm text-info-600 underline-offset-4 hover:underline dark:text-info-400'
-        >
-          ← posts
-        </Link>
+    <article className='relative space-y-8'>
+      <aside className='absolute left-full top-0 ml-12 hidden h-full w-56 xl:block'>
+        <TableOfContents />
+      </aside>
 
-        <h2 className='text-3xl font-semibold leading-tight'>{post.title}</h2>
+      <header className='space-y-4'>
+        <h1 className='text-4xl font-bold leading-snug tracking-tight'>
+          {post.title}
+        </h1>
 
-        <div className='text-sm text-base-500 dark:text-base-300'>
-          {post.date} · {POST_TYPE_LABEL[inferPostType(post)]}
+        <div className='flex items-center gap-4 text-sm text-base-500 dark:text-base-400'>
+          <span className='flex items-center gap-1.5'>
+            <CalendarIcon size={14} />
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+          </span>
+          <span className='flex items-center gap-1.5'>
+            <ClockIcon size={14} />
+            {getReadingMinutes(post.content)}분
+          </span>
         </div>
 
-        <div className='flex flex-wrap gap-3'>
+        <div className='flex flex-wrap gap-2'>
           {post.tags.map((tag) => (
             <Link
               key={`${post._meta.path}-${tag}`}
               href={`/tags/${encodeURIComponent(tag)}`}
-              className='text-xs text-base-500 underline-offset-4 hover:underline dark:text-base-400'
+              className='rounded-md bg-base-100 px-2 py-0.5 text-xs text-base-600 transition-colors hover:bg-base-200 dark:bg-base-700 dark:text-base-300 dark:hover:bg-base-600'
             >
-              #{tag}
+              {tag}
             </Link>
           ))}
         </div>

@@ -2,14 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Pretendard';
-  src: url('../../public/fonts/Pretendard-Medium.ttf');
-}
-
 @layer components {
   .prose :not(pre) > code {
-    @apply rounded-md bg-gray-100 px-1.5 py-0.5 text-sm font-normal dark:bg-gray-800;
+    @apply rounded-md bg-base-100 px-1.5 py-0.5 text-sm font-normal dark:bg-base-700;
+  }
+
+  .prose :is(h1, h2, h3) {
+    @apply scroll-mt-8;
+  }
+
+  .prose pre {
+    @apply dark:border dark:border-base-700;
   }
 
   .prose :not(pre) > code::before,
@@ -24,7 +27,7 @@
   }
 
   body {
-    @apply bg-white text-base-700 dark:bg-base-800 dark:text-base-300;
+    @apply break-keep bg-background text-base-700 dark:bg-base-800 dark:text-base-300;
   }
 
   h1,

@@ -4,48 +4,6 @@ export const posts = allPosts.sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
 );
 
-const POST_TYPES = [
-  'troubleshooting',
-  'knowledge',
-  'conference',
-  'retrospective',
-] as const;
-
-export type PostType = (typeof POST_TYPES)[number];
-
-export const POST_TYPE_LABEL: Record<PostType, string> = {
-  troubleshooting: '트러블슈팅',
-  knowledge: '지식 정리',
-  conference: '컨퍼런스/발표',
-  retrospective: '회고',
-};
-
-// knowledge는 키워드 없는 기본값. 아래 우선순위대로 먼저 매칭되는 타입을 쓴다.
-const TYPE_KEYWORDS: Record<Exclude<PostType, 'knowledge'>, string[]> = {
-  troubleshooting: ['trouble', 'issue', 'error', 'bug', '디버깅', '트러블', '해결'],
-  conference: ['conference', 'meetup', 'talk', '발표', '컨퍼런스', '세미나', '후기'],
-  retrospective: ['retrospective', '회고', 'restro', '돌아보기', 'retrospect'],
-};
-
-const TYPE_PRIORITY: Exclude<PostType, 'knowledge'>[] = [
-  'troubleshooting',
-  'conference',
-  'retrospective',
-];
-
-const includesAny = (text: string, keywords: string[]) =>
-  keywords.some((keyword) => text.includes(keyword));
-
-export const inferPostType = (post: Post): PostType => {
-  const text =
-    `${post.title} ${post.tags.join(' ')} ${post._meta.path}`.toLowerCase();
-
-  return (
-    TYPE_PRIORITY.find((type) => includesAny(text, TYPE_KEYWORDS[type])) ??
-    'knowledge'
-  );
-};
-
 export const getPostBySlug = (slug: string) =>
   posts.find((post) => post._meta.path === slug);
 
@@ -73,4 +31,16 @@ export const getTagCountMap = () => {
   }
 
   return map;
+};
+
+// '2026-09-11' → '2026년 9월 11일'
+export const formatDate = (date: string) => {
+  const [year, month, day] = date.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+};
+
+// 코드 블록을 뺀 글자 수를 분당 500자로 나눈 추정치
+export const getReadingMinutes = (content: string) => {
+  const text = content.replace(/```[\s\S]*?```/g, '');
+  return Math.max(1, Math.round(text.length / 500));
 };

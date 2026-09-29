@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const navItems = [
@@ -22,9 +21,10 @@ export default function Nav() {
       <Link
         href='/'
         aria-label='heeji.dev home'
-        className='inline-flex items-center py-1'
+        className='inline-flex items-center gap-1 py-1 text-lg font-bold tracking-tight text-base-900 dark:text-base-50'
       >
-        <Logo className='h-7 w-7 transition-transform hover:-translate-y-px' />
+        heeji.dev
+        <span className='inline-block h-5 w-0.5 animate-caret-blink bg-info-500 dark:bg-info-400' />
       </Link>
 
       <div className='flex items-center gap-5'>
@@ -33,7 +33,7 @@ export default function Nav() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`inline-block py-1 font-mono lowercase tracking-tight transition-colors ${
+                className={`inline-block py-1 capitalize transition-colors ${
                   isActive(item.href)
                     ? 'text-info-600 dark:text-info-400'
                     : 'text-base-500 dark:text-base-400'
