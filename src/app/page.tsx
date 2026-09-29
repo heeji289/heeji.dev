@@ -9,13 +9,6 @@ export default function HomePage() {
   return (
     <div className='space-y-14'>
       <section className='space-y-5'>
-        <p className='flex items-center gap-2 font-mono text-sm text-base-500 dark:text-base-400'>
-          <span className='font-semibold text-info-500 dark:text-info-400'>
-            {'>_'}
-          </span>
-          <span>heeji.dev</span>
-          <span className='inline-block h-4 w-[2px] animate-caret-blink bg-info-500 dark:bg-info-400' />
-        </p>
         <h2 className='text-[30px] font-semibold leading-tight text-base-900 dark:text-base-50'>
           안녕하세요.
           <br />

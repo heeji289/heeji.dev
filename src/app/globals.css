@@ -19,7 +19,7 @@
   }
 
   body {
-    @apply break-keep bg-white text-base-700 dark:bg-base-800 dark:text-base-300;
+    @apply break-keep bg-background text-base-700 dark:bg-base-800 dark:text-base-300;
   }
 
   h1,

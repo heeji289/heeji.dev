@@ -56,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`bg-background text-base-900 antialiased dark:text-base-50`}>
+      <body className={`text-base-900 antialiased dark:text-base-50`}>
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
@@ -70,7 +70,7 @@ export default function RootLayout({
           `}
         </Script>
         <section className='mx-auto w-full max-w-3xl px-6 py-16 font-pretendard font-normal'>
-          <div className='mb-12 border-b border-base-200 pb-5 dark:border-base-700'>
+          <div className='mb-10'>
             <Nav />
           </div>
           {children}
