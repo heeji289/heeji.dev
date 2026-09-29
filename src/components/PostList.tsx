@@ -1,18 +1,15 @@
 import Link from 'next/link';
 import { Post } from 'content-collections';
-import { inferPostType, POST_TYPE_LABEL } from '@/lib/posts';
 
 type Props = {
   posts: Post[];
   emptyMessage?: string;
-  showType?: boolean;
   showTags?: boolean;
 };
 
 export default function PostList({
   posts,
   emptyMessage,
-  showType = true,
   showTags = true,
 }: Props) {
   if (posts.length === 0) {
@@ -27,7 +24,6 @@ export default function PostList({
     <ul className='divide-y divide-base-200 dark:divide-base-700'>
       {posts.map((post) => {
         const metaItems = [
-          showType ? POST_TYPE_LABEL[inferPostType(post)] : '',
           post.date,
           showTags ? post.tags.map((tag) => `#${tag}`).join(' ') : '',
         ].filter(Boolean);

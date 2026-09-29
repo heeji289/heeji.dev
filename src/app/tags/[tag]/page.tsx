@@ -38,7 +38,7 @@ export default function TagDetailPage({ params }: { params: Param }) {
         </p>
       </section>
 
-      <PostList posts={filteredPosts} showType={false} showTags={false} />
+      <PostList posts={filteredPosts} showTags={false} />
     </div>
   );
 }

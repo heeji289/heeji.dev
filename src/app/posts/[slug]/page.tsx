@@ -3,12 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Markdown from '@/components/Markdown';
 import Giscus from '@/components/Giscus';
-import {
-  POST_TYPE_LABEL,
-  getPostBySlug,
-  inferPostType,
-  posts,
-} from '@/lib/posts';
+import { getPostBySlug, posts } from '@/lib/posts';
 
 type Param = {
   slug: string;
@@ -65,7 +60,7 @@ export default function PostDetailPage({ params }: { params: Param }) {
         <h1 className='text-3xl font-bold leading-tight'>{post.title}</h1>
 
         <div className='text-sm text-base-500 dark:text-base-300'>
-          {post.date} · {POST_TYPE_LABEL[inferPostType(post)]}
+          {post.date}
         </div>
 
         <div className='flex flex-wrap gap-3'>

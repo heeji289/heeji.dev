@@ -30,7 +30,7 @@ export default function HomePage() {
       {pinnedPosts.length > 0 && (
         <section className='space-y-3'>
           <h3 className='text-base font-medium'>pinned posts</h3>
-          <PostList posts={pinnedPosts} showType={false} />
+          <PostList posts={pinnedPosts} />
         </section>
       )}
 
@@ -44,7 +44,7 @@ export default function HomePage() {
             all posts →
           </Link>
         </div>
-        <PostList posts={recentPosts} showType={false} />
+        <PostList posts={recentPosts} />
       </section>
     </div>
   );

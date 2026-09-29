@@ -17,7 +17,7 @@ export default function PostsPage() {
         </p>
       </header>
 
-      <PostList posts={posts} showType={false} />
+      <PostList posts={posts} />
     </div>
   );
 }
