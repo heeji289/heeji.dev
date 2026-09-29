@@ -32,3 +32,15 @@ export const getTagCountMap = () => {
 
   return map;
 };
+
+// '2026-09-11' → '2026년 9월 11일'
+export const formatDate = (date: string) => {
+  const [year, month, day] = date.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+};
+
+// 코드 블록을 뺀 글자 수를 분당 500자로 나눈 추정치
+export const getReadingMinutes = (content: string) => {
+  const text = content.replace(/```[\s\S]*?```/g, '');
+  return Math.max(1, Math.round(text.length / 500));
+};
