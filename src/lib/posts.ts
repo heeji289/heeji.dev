@@ -39,8 +39,14 @@ export const formatDate = (date: string) => {
   return `${year}년 ${month}월 ${day}일`;
 };
 
-// 코드 블록을 뺀 글자 수를 분당 500자로 나눈 추정치
+// 코드 블록·이미지·링크 주소·마크다운 기호·공백을 뺀 글자 수를 분당 700자로 나눈 추정치
 export const getReadingMinutes = (content: string) => {
-  const text = content.replace(/```[\s\S]*?```/g, '');
-  return Math.max(1, Math.round(text.length / 500));
+  const text = content
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/https?:\/\/\S+/g, '')
+    .replace(/[#>*_`|\-\s]/g, '');
+  return Math.max(1, Math.round(text.length / 700));
 };
