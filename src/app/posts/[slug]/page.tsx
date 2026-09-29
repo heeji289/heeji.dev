@@ -62,7 +62,7 @@ export default function PostDetailPage({ params }: { params: Param }) {
           ← posts
         </Link>
 
-        <h2 className='text-3xl font-semibold leading-tight'>{post.title}</h2>
+        <h1 className='text-3xl font-bold leading-tight'>{post.title}</h1>
 
         <div className='text-sm text-base-500 dark:text-base-300'>
           {post.date} · {POST_TYPE_LABEL[inferPostType(post)]}

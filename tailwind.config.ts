@@ -14,12 +14,27 @@ const config = {
     extend: {
       colors: {
         primary: colors.teal,
-        base: colors.stone,
+        base: {
+          ...colors.stone,
+          50: '#f8fafc',
+          800: '#202125',
+          900: '#020817',
+        },
         info: colors.sky,
         warn: colors.yellow,
         error: colors.red,
         success: colors.green,
       },
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
+        stone: {
+          css: {
+            '--tw-prose-body': theme('colors.base.900'),
+            '--tw-prose-headings': theme('colors.base.900'),
+            '--tw-prose-invert-body': theme('colors.base.50'),
+            '--tw-prose-invert-headings': theme('colors.base.50'),
+          },
+        },
+      }),
       keyframes: {
         'caret-blink': {
           '0%, 49%': { opacity: '1' },
@@ -31,7 +46,7 @@ const config = {
       },
     },
     fontFamily: {
-      pretendard: ['Pretendard'],
+      pretendard: ['var(--font-pretendard)', 'sans-serif'],
       mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     },
   },

@@ -22,8 +22,12 @@ const mono = IBM_Plex_Mono({
   subsets: ['latin'],
 });
 
-const pretendardMedium = localFont({
-  src: '../../public/fonts/Pretendard-Medium.ttf',
+const pretendard = localFont({
+  src: [
+    { path: '../../public/fonts/Pretendard-Regular.ttf', weight: '400' },
+    { path: '../../public/fonts/Pretendard-Medium.ttf', weight: '500' },
+    { path: '../../public/fonts/Pretendard-Bold.ttf', weight: '700' },
+  ],
   display: 'swap',
   variable: '--font-pretendard',
 });
@@ -36,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang='ko'
-      className={`${mono.className} ${pretendardMedium.className}`}
+      className={`${mono.className} ${pretendard.variable}`}
       suppressHydrationWarning={true}
     >
       <head>
@@ -52,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`bg-background text-black antialiased dark:text-white`}>
+      <body className={`bg-background text-base-900 antialiased dark:text-base-50`}>
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
@@ -65,7 +69,7 @@ export default function RootLayout({
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
           `}
         </Script>
-        <section className='mx-auto w-full max-w-2xl px-6 py-16 font-pretendard'>
+        <section className='mx-auto w-full max-w-2xl px-6 py-16 font-pretendard font-normal'>
           <div className='mb-12 border-b border-base-200 pb-5 dark:border-base-700'>
             <Nav />
           </div>
