@@ -15,6 +15,14 @@ export const metadata: Metadata = {
       'application/rss+xml': 'https://heeji.dev/rss.xml',
     },
   },
+  // 브라우저가 아이콘을 오래 캐시하므로, 아이콘을 바꿀 때는 파일 이름의 버전을 올린다.
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+      { url: '/icon-v2.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-icon-v2.png',
+  },
 };
 
 const mono = IBM_Plex_Mono({
