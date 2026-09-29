@@ -69,7 +69,7 @@ export default function RootLayout({
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
           `}
         </Script>
-        <section className='mx-auto w-full max-w-2xl px-6 py-16 font-pretendard font-normal'>
+        <section className='mx-auto w-full max-w-3xl px-6 py-16 font-pretendard font-normal'>
           <div className='mb-12 border-b border-base-200 pb-5 dark:border-base-700'>
             <Nav />
           </div>
